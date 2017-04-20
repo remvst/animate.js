@@ -25,6 +25,23 @@ class Timeline extends BaseAnimation {
             delay = this._duration;
         }
 
+        if (animation instanceof Timeline) {
+            animation._children.forEach(child => {
+                this._children.push({
+                    'delay': delay + child.delay,
+                    'animation': child.animation
+                });
+
+                this._duration = Math.max(this._duration, delay + animation.duration);
+            });
+
+            animation._breakpoints.forEach(breakpoint => {
+                this._breakpoints.push(breakpoint + delay);
+            });
+
+            return this;
+        }
+
         if (animation.call) {
             animation = new Action(animation);
         }
@@ -34,17 +51,7 @@ class Timeline extends BaseAnimation {
             'animation': animation
         });
 
-        this._children.sort(function(a, b) {
-            return a.delay - b.delay;
-        });
-
-        this._duration = Math.max(this._duration, delay + (animation._duration || 0) + (animation.delay || 0));
-
-        if (animation instanceof Timeline) {
-            animation._breakpoints.forEach(breakpoint => {
-                this._breakpoints.push(breakpoint + delay);
-            });
-        }
+        this._duration = Math.max(this._duration, delay + animation.duration);
 
         return this;
     }

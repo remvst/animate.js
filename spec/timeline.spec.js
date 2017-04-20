@@ -222,10 +222,6 @@ describe('a timeline', () => {
         it('can skip to the first breakpoint', () => {
             tl.skip();
 
-            expect(stl11.cycle).toHaveBeenCalledWith(2);
-
-            expect(stl1.cycle).toHaveBeenCalledWith(2);
-
             expect(tl.elapsed).toBe(2);
 
             expect(a11.cycle).toHaveBeenCalledWith(2);
@@ -240,10 +236,6 @@ describe('a timeline', () => {
         it('can skip to the second breakpoint', () => {
             tl.skip();
             tl.skip();
-
-            expect(stl11.cycle).toHaveBeenCalledWith(2);
-
-            expect(stl1.cycle).toHaveBeenCalledWith(2);
 
             expect(tl.elapsed).toBe(4);
 
