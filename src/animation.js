@@ -1,6 +1,7 @@
 'use strict';
 
 const BaseAnimation = require('./base-animation');
+const Easing = require('./easing');
 
 const defaultApply = function(easing, duration, fromValue, toValue, elapsed) {
     return easing(elapsed, fromValue, toValue - fromValue, duration);
@@ -39,7 +40,7 @@ class Animation extends BaseAnimation {
         this._fromValue = fromValue;
         this._toValue = toValue;
 
-        this._easing = easing || Math.linearTween;
+        this._easing = easing || Easing.linear;
 
         return this;
     }

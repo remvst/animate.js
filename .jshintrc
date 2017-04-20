@@ -8,6 +8,8 @@
         "describe": true,
         "jasmine": true,
         "spyOn": true,
-        "expect": true
+        "expect": true,
+        "beforeEach": true,
+        "afterEach": true
     }
 }

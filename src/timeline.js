@@ -40,6 +40,12 @@ class Timeline extends BaseAnimation {
 
         this._duration = Math.max(this._duration, delay + (animation._duration || 0) + (animation.delay || 0));
 
+        if (animation instanceof Timeline) {
+            animation._breakpoints.forEach(breakpoint => {
+                this._breakpoints.push(breakpoint + delay);
+            });
+        }
+
         return this;
     }
 
@@ -78,11 +84,6 @@ class Timeline extends BaseAnimation {
     }
 
     startChild(child) {
-        if (child.animation.call) {
-            child.animation(this);
-            return;
-        }
-
         this._runningChildren.push(child.animation);
         child.animation.cycle(this._elapsed - child.delay);
     }
@@ -110,7 +111,11 @@ class Timeline extends BaseAnimation {
     }
 
     get size() {
-        return this._runningChildren.length + this._children.length;
+        return this._runningChildren.reduce((size, child) => {
+            return size + child.size;
+        }, 0) + this._children.reduce((size, child) => {
+            return size + child.animation.size;
+        }, 0);
     }
 
 }

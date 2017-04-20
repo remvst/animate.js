@@ -46,6 +46,10 @@ class BaseAnimation {
         return 1;
     }
 
+    get elapsed() {
+        return this._elapsed;
+    }
+
 }
 
 module.exports = BaseAnimation;
