@@ -165,6 +165,18 @@ describe('a timeline', () => {
             expect(a3.cycle).toHaveBeenCalledWith(3);
         });
 
+        it('with several cycles that hit everything', () => {
+            for (let t = 0 ; t < 100 ; t += 0.1) {
+                tl.cycle(0.1);
+            }
+
+            expect(tl.isFinished()).toBe(true);
+            expect(tl.elapsed).toBe(11);
+            expect(a1.elapsed).toBe(1);
+            expect(a2.elapsed).toBe(2);
+            expect(a3.elapsed).toBe(3);
+        });
+
         it('and skip to a breakpoint', () => {
             tl.skip();
 
@@ -224,8 +236,8 @@ describe('a timeline', () => {
 
             expect(tl.elapsed).toBe(2);
 
-            expect(a11.cycle).toHaveBeenCalledWith(2);
-            expect(a12.cycle).toHaveBeenCalledWith(2);
+            expect(a11.elapsed).toBe(2);
+            expect(a12.elapsed).toBe(2);
 
             expect(a21.elapsed).toBe(0);
             expect(a22.elapsed).toBe(0);
@@ -239,13 +251,29 @@ describe('a timeline', () => {
 
             expect(tl.elapsed).toBe(4);
 
-            expect(a11.cycle).toHaveBeenCalledWith(2);
-            expect(a12.cycle).toHaveBeenCalledWith(2);
+            expect(a11.elapsed).toBe(2);
+            expect(a12.elapsed).toBe(2);
 
             expect(a21.elapsed).toBe(2);
             expect(a22.elapsed).toBe(0);
 
             expect(a1.elapsed).toBe(0);
+        });
+
+        it('can skip to the end', () => {
+            tl.skip();
+            tl.skip();
+            tl.skip();
+
+            expect(tl.elapsed).toBe(9);
+
+            expect(a11.elapsed).toBe(2);
+            expect(a12.elapsed).toBe(2);
+
+            expect(a21.elapsed).toBe(2);
+            expect(a22.elapsed).toBe(2);
+
+            expect(a1.elapsed).toBe(3);
         });
     });
 
