@@ -12,11 +12,6 @@ class Action extends BaseAnimation {
 
     cycle(e) {
         super.cycle(e);
-
-        if (this._called) {
-            return;
-        }
-
         this._called = true;
         this._callback();
     }
