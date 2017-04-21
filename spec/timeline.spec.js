@@ -366,7 +366,8 @@ describe('a timeline', () => {
             .add(8, c3)
             .add(7, c4)
             .add(6, c5)
-            .add(5, c6);
+            .add(5, c6)
+            .add(10, () => {});
 
         timeline.cycle(10);
 
