@@ -59,10 +59,8 @@ class Timeline extends BaseAnimation {
             'animation': animation
         });
 
-        // Calculate the new duration. The last child alone is not enough, as it could be shorter than another child
-        // that starts earlier (children are sorted based on their start, not their end time)
-        const lastChild = this._children[this._children.length - 1];
-        this._duration = Math.max(this._duration, lastChild.delay + lastChild.animation.duration);
+        // Calculate the new duration
+        this._duration = Math.max(this._duration, delay + animation.duration);
 
         return this;
     }
