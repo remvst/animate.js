@@ -9,7 +9,9 @@ describe('an animation', () => {
     beforeEach(function() {
         object = {
             'foo': 43,
-            'foo.bar': 1
+            'bar': {
+                'baz': 1
+            }
         };
     });
 
@@ -111,6 +113,39 @@ describe('an animation', () => {
         animation.cycle(5);
 
         expect(progress).toHaveBeenCalledWith(0.5);
+    });
+
+    it('can have a custom apply function', () => {
+        const apply = jasmine.createSpy();
+        const easing = {};
+
+        const animation = new Animation(object)
+            .interp('foo', 0, 1, easing)
+            .apply(apply)
+            .during(10);
+
+        animation.cycle(5);
+
+        expect(apply).toHaveBeenCalledWith(easing, 10, 0, 1, 5);
+    });
+
+    it('can skip', () => {
+        const animation = new Animation(object)
+            .interp('foo', 0, 1);
+
+        animation.skip();
+
+        expect(object.foo).toBe(1);
+    });
+
+    it('can run on a nested property', () => {
+        const animation = new Animation(object)
+            .interp('bar.baz', 10, 20)
+            .during(10);
+
+        animation.cycle(5);
+
+        expect(object.bar.baz).toBe(15);
     });
 
 });
