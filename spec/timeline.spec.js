@@ -212,7 +212,7 @@ describe('a timeline', () => {
                 .add(stl1)
                 .addBreakpoint()
                 .add(stl2)
-                .add(a1 = new Animation().during(3));
+                .add(a1 = new Animation({}).interp('foo', 0, 1).during(3));
 
             spyOn(stl1, 'cycle').and.callThrough();
             spyOn(a11, 'cycle').and.callThrough();

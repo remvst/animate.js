@@ -19,7 +19,7 @@ class Animation extends BaseAnimation {
         this._fromValue = 0;
         this._easing = null;
         this._onFinish = null;
-        this._onProgress = null;
+        this._progress = null;
         this._applyFunction = defaultApply;
         this._overrides = true;
 
@@ -56,17 +56,16 @@ class Animation extends BaseAnimation {
     }
 
     progress(callback) {
-        this._onProgress = callback;
+        this._progress = callback;
         return this;
     }
 
     cycle(e) {
-        super.cycle(e);
-
         if (this.isFinished()) {
             return;
         }
 
+        super.cycle(e);
         this.applyProgress();
     }
 
@@ -83,8 +82,8 @@ class Animation extends BaseAnimation {
             this._toValue,
             this._elapsed
         );
-        if (this._onProgress) {
-            this._onProgress(this._elapsed / this.duration);
+        if (this._progress) {
+            this._progress(this._elapsed / this.duration);
         }
     }
 
