@@ -26,18 +26,19 @@ class Timeline extends BaseAnimation {
         }
 
         if (animation instanceof Timeline) {
+            // Add each timeline child
             animation._children.forEach(child => {
-                this._children.push({
-                    'delay': delay + child.delay,
-                    'animation': child.animation
+                this.add(delay + child.delay, child.animation);
+            });
+
+            // Get breakpoints from the child
+            if (animation._breakpoints.length > 0) {
+                animation._breakpoints.forEach(breakpoint => {
+                    this._breakpoints.push(breakpoint + delay);
                 });
 
-                this._duration = Math.max(this._duration, delay + animation.duration);
-            });
-
-            animation._breakpoints.forEach(breakpoint => {
-                this._breakpoints.push(breakpoint + delay);
-            });
+                this._breakpoints.sort();
+            }
 
             return this;
         }
@@ -46,12 +47,20 @@ class Timeline extends BaseAnimation {
             animation = new Action(animation);
         }
 
-        this._children.push({
+        // Find the index at which we want to insert
+        let index = this._children.length - 1;
+        while (index >= 0 && this._children[index].delay > delay) {
+            index--;
+        }
+
+        // Insert
+        this._children.splice(index + 1, 0, {
             'delay': delay,
             'animation': animation
         });
 
-        this._duration = Math.max(this._duration, delay + animation.duration);
+        const lastChild = this._children[this._children.length - 1];
+        this._duration = lastChild.delay + lastChild.animation.duration;
 
         return this;
     }

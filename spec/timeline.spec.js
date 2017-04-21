@@ -326,4 +326,66 @@ describe('a timeline', () => {
         expect(action.calls.count()).toBe(1);
     });
 
+    it('runs children in the right order', () => {
+        const c1 = new Animation({}).interp('foo', 0, 1).during(1);
+        const c2 = new Animation({}).interp('foo', 0, 1).during(1);
+        const c3 = new Animation({}).interp('foo', 0, 1).during(1);
+        const c4 = new Animation({}).interp('foo', 0, 1).during(1);
+        const c5 = new Animation({}).interp('foo', 0, 1).during(1);
+        const c6 = new Animation({}).interp('foo', 0, 1).during(1);
+
+        const order = [];
+
+        spyOn(c1, 'cycle').and.callFake(() => {
+            order.push(c1);
+        });
+
+        spyOn(c2, 'cycle').and.callFake(() => {
+            order.push(c2);
+        });
+
+        spyOn(c3, 'cycle').and.callFake(() => {
+            order.push(c3);
+        });
+
+        spyOn(c4, 'cycle').and.callFake(() => {
+            order.push(c4);
+        });
+
+        spyOn(c5, 'cycle').and.callFake(() => {
+            order.push(c5);
+        });
+
+        spyOn(c6, 'cycle').and.callFake(() => {
+            order.push(c6);
+        });
+
+        const timeline = new Timeline()
+            .add(10, c1)
+            .add(9, c2)
+            .add(8, c3)
+            .add(7, c4)
+            .add(6, c5)
+            .add(5, c6);
+
+        timeline.cycle(10);
+
+        expect(order).toEqual([c6, c5, c4, c3, c2, c1]);
+        expect(timeline.duration).toBe(11);
+    });
+
+    it('runs breakpoints in the right order', () => {
+        const tl = new Timeline()
+            .add(5, new Timeline()
+                .add(new Animation({}).interp('foo', 0, 1))
+                .addBreakpoint())
+            .add(2, new Timeline()
+                .add(new Animation({}).interp('foo', 0, 1))
+                .addBreakpoint());
+
+        tl.skip();
+
+        expect(tl.elapsed).toBe(3);
+    });
+
 });
