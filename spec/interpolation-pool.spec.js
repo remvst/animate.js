@@ -2,6 +2,7 @@
 
 const InterpolationPool = require('../src/interpolation-pool');
 const Animation = require('../src/animation');
+const Timeline = require('../src/timeline');
 
 describe('an interpolation pool', () => {
 
@@ -64,6 +65,33 @@ describe('an interpolation pool', () => {
         expect(a3.cycle).toHaveBeenCalledWith(2.5);
 
         expect(pool.size).toBe(2);
+    });
+
+    it('can run a main animation and skip', () => {
+        const tl = new Timeline()
+            .runAsMain(pool);
+        spyOn(tl, 'skip');
+
+        pool.skip();
+
+        expect(tl.skip).toHaveBeenCalled();
+    });
+
+    it('can run a main animation and clear it from memory when it\'s over', () => {
+        const tl = new Timeline()
+            .runAsMain(pool);
+        spyOn(tl, 'skip');
+
+        pool.cycle(10);
+        pool.skip();
+
+        expect(tl.skip).not.toHaveBeenCalled();
+    });
+
+    it('can skip with no main timeline', () => {
+        expect(() => {
+            pool.skip();
+        }).not.toThrow();
     });
 
 });

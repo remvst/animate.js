@@ -61,12 +61,6 @@ class Timeline extends BaseAnimation {
         return this;
     }
 
-    runAsMain(pool) {
-        this.run(pool);
-        pool.setMainTimeline(this);
-        return this;
-    }
-
     cycle(e) {
         super.cycle(e);
 

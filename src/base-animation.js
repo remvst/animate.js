@@ -26,6 +26,12 @@ class BaseAnimation {
         return this;
     }
 
+    runAsMain(pool) {
+        this.run(pool);
+        pool.setMainTimeline(this);
+        return this;
+    }
+
     cycle(e) { // jshint ignore:line
         this._elapsed += e;
 
