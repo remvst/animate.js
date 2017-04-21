@@ -7,17 +7,17 @@ class Loop extends BaseAnimation {
     constructor(interval, callback, initialDelay) {
         super();
 
-        this.interval = interval;
-        this.nextCall = initialDelay !== undefined ? initialDelay : this.interval;
-        this.callback = callback;
-        this.cancelled = false;
+        this._interval = interval;
+        this._nextCall = initialDelay !== undefined ? initialDelay : this._interval;
+        this._callback = callback;
+        this._cancelled = false;
     }
 
     cycle(e) {
-        this.nextCall -= e;
-        if (this.nextCall <= 0) {
-            this.nextCall = this.interval;
-            this.callback();
+        this._nextCall -= e;
+        while (this._nextCall <= 0) {
+            this._nextCall += this._interval;
+            this._callback();
         }
     }
 
