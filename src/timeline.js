@@ -85,8 +85,11 @@ class Timeline extends BaseAnimation {
     }
 
     startChild(child) {
-        this._runningChildren.push(child.animation);
         child.animation.cycle(this._elapsed - child.delay);
+
+        if (!child.animation.isFinished()) {
+            this._runningChildren.push(child.animation);
+        }
     }
 
     skip() {
@@ -101,6 +104,10 @@ class Timeline extends BaseAnimation {
 
     cancel() {
         super.cancel();
+
+        this._children.forEach(function(child) {
+            child.animation.cancel();
+        });
 
         this._runningChildren.forEach(function(child) {
             child.cancel();

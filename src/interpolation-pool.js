@@ -1,6 +1,6 @@
 'use strict';
 
-const DelayedAction = require('./delayed-action');
+const Timeline = require('./timeline');
 
 class InterpolationPool {
 
@@ -41,7 +41,7 @@ class InterpolationPool {
     }
 
     delay(delay, action) {
-        this.add(new DelayedAction(delay, action));
+        new Timeline().add(delay, action).run(this);
     }
 
     setMainTimeline(timeline) {

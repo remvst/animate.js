@@ -4,6 +4,12 @@ const Loop = require('../src/loop');
 
 describe('a loop', () => {
 
+    it('has an infinite duration', () => {
+        const loop  = new Loop(3, () => {});
+
+        expect(loop.duration).toBe(Infinity);
+    });
+
     it('can have a zero cycle', () => {
         const callback = jasmine.createSpy();
         const loop  = new Loop(3, callback);

@@ -94,4 +94,18 @@ describe('an interpolation pool', () => {
         }).not.toThrow();
     });
 
+    it('can run a delay', () => {
+        const callback = jasmine.createSpy();
+
+        pool.delay(2, callback);
+
+        expect(callback.calls.count()).toBe(0);
+        expect(pool.size).toBe(1);
+
+        pool.cycle(10);
+
+        expect(callback.calls.count()).toBe(1);
+        expect(pool.size).toBe(0);
+    });
+
 });

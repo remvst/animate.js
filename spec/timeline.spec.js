@@ -81,10 +81,29 @@ describe('a timeline', () => {
                 .add(new Animation().during(3))
                 .addBreakpoint()
                 .wait(3)
+                .add(
+                    new Timeline()
+                        .add(new Animation().during(2))
+                )
                 .add(new Animation().during(5));
 
-            expect(tl.duration).toBe(13);
-            expect(tl.size).toBe(2);
+            expect(tl.duration).toBe(15);
+            expect(tl.size).toBe(3);
+        });
+
+        it('can calculate its size when running', () => {
+            const tl = new Timeline()
+                .add(new Animation({}).interp('foo', 0, 1).during(2))
+                .add(
+                    new Timeline()
+                        .add(0, new Animation({}).interp('foo', 0, 1).during(3))
+                        .add(0, new Animation({}).interp('foo', 0, 1).during(4))
+                )
+                .add(new Animation({}).interp('foo', 0, 1).during(5));
+
+            tl.cycle(3);
+
+            expect(tl.size).toBe(3);
         });
 
     });
@@ -275,6 +294,36 @@ describe('a timeline', () => {
 
             expect(a1.elapsed).toBe(3);
         });
+    });
+
+    it('can be cancelled', () => {
+        const a1 = new Animation({}).interp('foo', 0, 1).during(1);
+        const a2 = new Animation({}).interp('foo', 0, 1).during(1);
+
+        spyOn(a1, 'cancel');
+        spyOn(a2, 'cancel');
+
+        const tl = new Timeline()
+            .add(a1)
+            .add(a2);
+
+        tl.cycle(0.5);
+        tl.cancel();
+
+        expect(a1.cancel).toHaveBeenCalled();
+        expect(a2.cancel).toHaveBeenCalled();
+    });
+
+    it('runs actions only once', () => {
+        const action = jasmine.createSpy();
+
+        const timeline = new Timeline()
+            .add(action);
+
+        timeline.cycle(0);
+        timeline.cycle(0);
+
+        expect(action.calls.count()).toBe(1);
     });
 
 });

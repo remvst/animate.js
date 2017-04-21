@@ -24,6 +24,27 @@ describe('an animation', () => {
         expect(animation.elapsed).toBe(0);
     });
 
+    it('can be cancelled', () => {
+        const animation = new Animation(object)
+            .interp('foo', 0, 1);
+
+        animation.cancel();
+
+        expect(animation.isFinished()).toBe(true);
+    });
+
+    it('can be cancelled after running', () => {
+        const animation = new Animation(object)
+            .interp('foo', 0, 1)
+            .during(1);
+
+        animation.cycle(0.5);
+        animation.cancel();
+
+        expect(animation.isFinished()).toBe(true);
+        expect(object.foo).toBe(0.5);
+    });
+
     it('can be instantiated and have a specific duration', () => {
         const animation = new Animation(object)
             .interp('foo', 0, 1)

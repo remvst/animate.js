@@ -4,7 +4,6 @@ class BaseAnimation {
 
     constructor() {
         this._cancelled = false;
-        this._pool = null;
         this._elapsed = 0;
     }
 
@@ -22,7 +21,6 @@ class BaseAnimation {
 
     run(pool) {
         pool.add(this);
-        this._pool = pool;
         return this;
     }
 
@@ -42,10 +40,6 @@ class BaseAnimation {
 
     get duration() {
         return 0;
-    }
-
-    get pool() {
-        return this._pool;
     }
 
     get size() {

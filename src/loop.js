@@ -22,7 +22,7 @@ class Loop extends BaseAnimation {
     }
 
     get duration() {
-        return Number.MAX_VALUE;
+        return Infinity;
     }
 
 }
