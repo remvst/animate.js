@@ -10,7 +10,7 @@ describe('a dynamic timeline', () => {
         const build = jasmine.createSpy();
         const dtl = new DynamicTimeline(123, build);
 
-        expect(dtl.size).toBe(0);
+        expect(dtl.size).toBe(1);
         expect(dtl.duration).toBe(123);
         expect(dtl.isFinished()).toBe(false);
         expect(build).not.toHaveBeenCalled();
