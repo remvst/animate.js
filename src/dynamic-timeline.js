@@ -21,6 +21,12 @@ class DynamicTimeline extends BaseAnimation {
         }
     }
 
+    skip() {
+        super.skip();
+        this.cycle(0); // make sure we built
+        this._built.skip();
+    }
+
     get duration() {
         return this._duration;
     }

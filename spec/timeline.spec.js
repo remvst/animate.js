@@ -389,4 +389,16 @@ describe('a timeline', () => {
         expect(tl.elapsed).toBe(3);
     });
 
+    it('will call final functions when skipping', () => {
+        const action = jasmine.createSpy();
+
+        const tl = new Timeline()
+            .wait(2)
+            .add(action);
+
+        tl.skip();
+
+        expect(action.calls.count()).toBe(1);
+    });
+
 });
