@@ -37,8 +37,8 @@ class DynamicTimeline extends BaseAnimation {
         return 1;
     }
 
-    isFinished() {
-        return !!(this._built && this._built.isFinished());
+    get finished() {
+        return !!(this._built && this._built.finished);
     }
 
 }

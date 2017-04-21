@@ -61,7 +61,7 @@ class Animation extends BaseAnimation {
     }
 
     cycle(e) {
-        if (this.isFinished()) {
+        if (this.finished) {
             return;
         }
 

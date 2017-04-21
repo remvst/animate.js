@@ -81,7 +81,7 @@ class Timeline extends BaseAnimation {
         this._runningChildren.slice().forEach(child => {
             child.cycle(e);
 
-            if (child.isFinished()) {
+            if (child.finished) {
                 this._runningChildren.splice(index, 1);
             } else {
                 index++;
@@ -96,7 +96,7 @@ class Timeline extends BaseAnimation {
     startChild(child) {
         child.animation.cycle(this._elapsed - child.delay);
 
-        if (!child.animation.isFinished()) {
+        if (!child.animation.finished) {
             this._runningChildren.push(child.animation);
         }
     }

@@ -7,7 +7,7 @@ class BaseAnimation {
         this._elapsed = 0;
     }
 
-    isFinished() {
+    get finished() {
         return this._cancelled || this._elapsed >= this.duration;
     }
 

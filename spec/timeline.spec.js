@@ -174,7 +174,7 @@ describe('a timeline', () => {
         it('with a cycle that hits everything', () => {
             tl.cycle(100);
 
-            expect(tl.isFinished()).toBe(true);
+            expect(tl.finished).toBe(true);
             expect(tl.elapsed).toBe(11);
             expect(f1.calls.count()).toBe(1);
             expect(f2.calls.count()).toBe(1);
@@ -189,7 +189,7 @@ describe('a timeline', () => {
                 tl.cycle(0.1);
             }
 
-            expect(tl.isFinished()).toBe(true);
+            expect(tl.finished).toBe(true);
             expect(tl.elapsed).toBe(11);
             expect(a1.elapsed).toBe(1);
             expect(a2.elapsed).toBe(2);
@@ -199,7 +199,7 @@ describe('a timeline', () => {
         it('and skip to a breakpoint', () => {
             tl.skip();
 
-            expect(tl.isFinished()).toBe(false);
+            expect(tl.finished).toBe(false);
             expect(tl.elapsed).toBe(8);
             expect(f1.calls.count()).toBe(1);
             expect(f2.calls.count()).toBe(1);

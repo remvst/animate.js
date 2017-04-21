@@ -30,7 +30,7 @@ describe('an animation', () => {
 
         animation.cancel();
 
-        expect(animation.isFinished()).toBe(true);
+        expect(animation.finished).toBe(true);
     });
 
     it('can be cancelled after running', () => {
@@ -41,7 +41,7 @@ describe('an animation', () => {
         animation.cycle(0.5);
         animation.cancel();
 
-        expect(animation.isFinished()).toBe(true);
+        expect(animation.finished).toBe(true);
         expect(object.foo).toBe(0.5);
     });
 

@@ -12,7 +12,7 @@ describe('a dynamic timeline', () => {
 
         expect(dtl.size).toBe(1);
         expect(dtl.duration).toBe(123);
-        expect(dtl.isFinished()).toBe(false);
+        expect(dtl.finished).toBe(false);
         expect(build).not.toHaveBeenCalled();
     });
 
@@ -27,7 +27,7 @@ describe('a dynamic timeline', () => {
 
         expect(dtl.size).toBe(2);
         expect(dtl.duration).toBe(123);
-        expect(dtl.isFinished()).toBe(false);
+        expect(dtl.finished).toBe(false);
     });
 
     it('can be built and run', () => {
@@ -42,7 +42,7 @@ describe('a dynamic timeline', () => {
         dtl.cycle(0.5);
 
         expect(dtl.size).toBe(2);
-        expect(dtl.isFinished()).toBe(false);
+        expect(dtl.finished).toBe(false);
         expect(object.foo).toBe(0.5);
     });
 
@@ -55,14 +55,14 @@ describe('a dynamic timeline', () => {
 
         expect(dtl.size).toBe(0);
         expect(dtl.duration).toBe(123);
-        expect(dtl.isFinished()).toBe(false);
+        expect(dtl.finished).toBe(false);
         expect(build.calls.count()).toBe(1);
     });
 
     it('isn\'t finished if it hasn\'t been built yet', () => {
         const dtl = new DynamicTimeline(123, () => {});
 
-        expect(dtl.isFinished()).toBe(false);
+        expect(dtl.finished).toBe(false);
     });
 
     it('isn\'t finished if its child isn\'t finished', () => {
@@ -73,7 +73,7 @@ describe('a dynamic timeline', () => {
 
         dtl.cycle(10);
 
-        expect(dtl.isFinished()).toBe(false);
+        expect(dtl.finished).toBe(false);
     });
 
     it('can be skipped', () => {
@@ -84,8 +84,8 @@ describe('a dynamic timeline', () => {
 
         dtl.skip();
 
-        expect(dtl.isFinished()).toBe(true);
-        expect(child.isFinished()).toBe(true);
+        expect(dtl.finished).toBe(true);
+        expect(child.finished).toBe(true);
         expect(child.skip).toHaveBeenCalled();
     });
 

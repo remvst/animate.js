@@ -16,8 +16,8 @@ class Action extends BaseAnimation {
         this._callback();
     }
 
-    isFinished() {
-        return this._cancelled || this._called;
+    get finished() {
+        return super.finished || this._called;
     }
 
 }
