@@ -46,8 +46,8 @@ describe('a dynamic timeline', () => {
         expect(object.foo).toBe(0.5);
     });
 
-    it('only builds one', () => {
-        const build = jasmine.createSpy().and.returnValue(new Timeline());
+    it('only builds once', () => {
+        const build = jasmine.createSpy().and.returnValue(new Timeline().wait(1));
         const dtl = new DynamicTimeline(123, build);
 
         dtl.cycle(0);
@@ -57,6 +57,36 @@ describe('a dynamic timeline', () => {
         expect(dtl.duration).toBe(123);
         expect(dtl.isFinished()).toBe(false);
         expect(build.calls.count()).toBe(1);
+    });
+
+    it('isn\'t finished if it hasn\'t been built yet', () => {
+        const dtl = new DynamicTimeline(123, () => {});
+
+        expect(dtl.isFinished()).toBe(false);
+    });
+
+    it('isn\'t finished if its child isn\'t finished', () => {
+        const dtl = new DynamicTimeline(1, () => {
+            return new Timeline()
+                .wait(100);
+        });
+
+        dtl.cycle(10);
+
+        expect(dtl.isFinished()).toBe(false);
+    });
+
+    it('can be skipped', () => {
+        const child = new Timeline().wait(5);
+        spyOn(child, 'skip').and.callThrough();
+
+        const dtl = new DynamicTimeline(10, () => child);
+
+        dtl.skip();
+
+        expect(dtl.isFinished()).toBe(true);
+        expect(child.isFinished()).toBe(true);
+        expect(child.skip).toHaveBeenCalled();
     });
 
 });

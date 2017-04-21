@@ -16,9 +16,7 @@ class DynamicTimeline extends BaseAnimation {
             this._built = this._buildFunc(this);
         }
 
-        if (!this._built.isFinished()) {
-            this._built.cycle(e);
-        }
+        this._built.cycle(e);
     }
 
     skip() {
@@ -37,6 +35,10 @@ class DynamicTimeline extends BaseAnimation {
         }
 
         return 1;
+    }
+
+    isFinished() {
+        return !!(this._built && this._built.isFinished());
     }
 
 }
