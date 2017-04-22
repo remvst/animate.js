@@ -5,6 +5,7 @@ class BaseAnimation {
     constructor() {
         this._cancelled = false;
         this._elapsed = 0;
+        this._actualElapsed = 0;
     }
 
     get finished() {
@@ -32,6 +33,7 @@ class BaseAnimation {
 
     cycle(e) { // jshint ignore:line
         this._elapsed += e;
+        this._actualElapsed += e;
 
         if (this._elapsed >= this.duration) {
             this._elapsed = this.duration;

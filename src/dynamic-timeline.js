@@ -12,6 +12,8 @@ class DynamicTimeline extends BaseAnimation {
     }
 
     cycle(e) {
+        super.cycle(e);
+
         if (!this._built) {
             this._built = this._buildFunc(this);
         }

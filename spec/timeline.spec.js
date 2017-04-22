@@ -1,6 +1,7 @@
 'use strict';
 
 const Timeline = require('../src/timeline');
+const DynamicTimeline = require('../src/dynamic-timeline');
 const Animation = require('../src/animation');
 
 describe('a timeline', () => {
@@ -178,10 +179,10 @@ describe('a timeline', () => {
             expect(tl.elapsed).toBe(11);
             expect(f1.calls.count()).toBe(1);
             expect(f2.calls.count()).toBe(1);
-            expect(a1.cycle).toHaveBeenCalledWith(9);
+            expect(a1.cycle).toHaveBeenCalledWith(98);
             expect(f3.calls.count()).toBe(1);
-            expect(a2.cycle).toHaveBeenCalledWith(5);
-            expect(a3.cycle).toHaveBeenCalledWith(3);
+            expect(a2.cycle).toHaveBeenCalledWith(94);
+            expect(a3.cycle).toHaveBeenCalledWith(92);
         });
 
         it('with several cycles that hit everything', () => {
@@ -399,6 +400,21 @@ describe('a timeline', () => {
         tl.skip();
 
         expect(action.calls.count()).toBe(1);
+    });
+
+    it('will not be finished until all of its children are finished', () => {
+        const tl = new Timeline()
+            .add(
+                new DynamicTimeline(1, () => {
+                    return new Timeline().wait(100);
+                })
+            );
+
+        tl.cycle(2);
+        expect(tl.finished).toBe(false);
+
+        tl.cycle(98);
+        expect(tl.finished).toBe(true);
     });
 
 });

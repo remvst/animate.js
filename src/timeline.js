@@ -94,7 +94,7 @@ class Timeline extends BaseAnimation {
     }
 
     startChild(child) {
-        child.animation.cycle(this._elapsed - child.delay);
+        child.animation.cycle(this._actualElapsed - child.delay);
 
         if (!child.animation.finished) {
             this._runningChildren.push(child.animation);
@@ -133,6 +133,10 @@ class Timeline extends BaseAnimation {
         }, 0) + this._children.reduce((size, child) => {
             return size + child.animation.size;
         }, 0);
+    }
+
+    get finished() {
+        return super.finished && this._children.length === 0 && this._runningChildren.length === 0;
     }
 
 }
