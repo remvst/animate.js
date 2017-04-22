@@ -10,6 +10,11 @@ describe('a loop', () => {
         expect(loop.duration).toBe(Infinity);
     });
 
+    it('cannot be instantiated with a zero or less interval', () => {
+        expect(() => { new Loop(0, () => {}); }).toThrow();
+        expect(() => { new Loop(-1, () => {}); }).toThrow();
+    });
+
     it('can have a zero cycle', () => {
         const callback = jasmine.createSpy();
         const loop  = new Loop(3, callback);

@@ -7,6 +7,10 @@ class Loop extends BaseAnimation {
     constructor(interval, callback, initialDelay) {
         super();
 
+        if (interval <= 0) {
+            throw new Error('Cannot create a loop with an interval of zero or less');
+        }
+
         this._interval = interval;
         this._nextCall = initialDelay !== undefined ? initialDelay : this._interval;
         this._callback = callback;
