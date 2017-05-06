@@ -6,6 +6,7 @@ class BaseAnimation {
         this._cancelled = false;
         this._elapsed = 0;
         this._actualElapsed = 0;
+        this._interpolationPool = null;
     }
 
     get finished() {
@@ -18,9 +19,11 @@ class BaseAnimation {
 
     cancel() {
         this._cancelled = true;
+        this._interpolationPool = null;
     }
 
     run(pool) {
+        this._interpolationPool = pool;
         pool.add(this);
         return this;
     }
@@ -50,6 +53,10 @@ class BaseAnimation {
 
     get elapsed() {
         return this._elapsed;
+    }
+
+    get interpolationPool() {
+        return this._interpolationPool;
     }
 
 }

@@ -13,10 +13,11 @@ describe('an interpolation pool', () => {
     });
 
     it('can have animations', () => {
-        new Animation()
+        const a = new Animation()
             .run(pool);
 
         expect(pool.size).toBe(1);
+        expect(a.interpolationPool).toBe(pool);
     });
 
     it('can run animations', () => {
