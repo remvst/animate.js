@@ -98,6 +98,10 @@ class Animation extends BaseAnimation {
         return this;
     }
 
+    set duration(duration) {
+        this._duration = duration;
+    }
+
     get duration() {
         return this._duration;
     }

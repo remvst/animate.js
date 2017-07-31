@@ -9,6 +9,7 @@ class DynamicTimeline extends BaseAnimation {
         this._built = null;
         this._duration = duration;
         this._buildFunc = buildFunc;
+        this._builtDurationFactor = 1;
     }
 
     cycle(e) {
@@ -16,6 +17,7 @@ class DynamicTimeline extends BaseAnimation {
 
         if (!this._built) {
             this._built = this._buildFunc(this);
+            this._built.duration *= this._builtDurationFactor;
         }
 
         this._built.cycle(e);
@@ -25,6 +27,19 @@ class DynamicTimeline extends BaseAnimation {
         super.skip();
         this.cycle(0); // make sure we built
         this._built.skip();
+    }
+
+    set duration(duration) {
+        const previousDuration = this._duration;
+        const durationRatio = duration / this._duration;
+
+        this._duration = duration;
+
+        this._builtDurationFactor *= durationRatio;
+
+        if (this._built) {
+            this._built.duration *= durationRatio;
+        }
     }
 
     get duration() {

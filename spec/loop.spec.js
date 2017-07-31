@@ -10,6 +10,12 @@ describe('a loop', () => {
         expect(loop.duration).toBe(Infinity);
     });
 
+    it('cannot be set a new duration', () => {
+        const loop  = new Loop(3, () => {});
+
+        expect(() => loop.duration = 123).toThrow();
+    });
+
     it('cannot be instantiated with a zero or less interval', () => {
         expect(() => { new Loop(0, () => {}); }).toThrow();
         expect(() => { new Loop(-1, () => {}); }).toThrow();

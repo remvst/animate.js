@@ -114,12 +114,28 @@ class Timeline extends BaseAnimation {
     cancel() {
         super.cancel();
 
-        this._children.forEach(function(child) {
-            child.animation.cancel();
+        this._children.forEach(child => {
+            child.animation.cancel()
         });
 
-        this._runningChildren.forEach(function(child) {
-            child.cancel();
+        this._runningChildren.forEach(child => {
+            child.cancel()
+        });
+    }
+
+    set duration(duration) {
+        const previousDuration = this._duration;
+        const durationRatio = duration / this._duration;
+
+        this._duration = duration;
+
+        this._children.forEach(child => {
+            child.delay *= durationRatio;
+            child.animation.duration *= durationRatio;
+        });
+
+        this._runningChildren.forEach(child => {
+            child.duration *= durationRatio;
         });
     }
 

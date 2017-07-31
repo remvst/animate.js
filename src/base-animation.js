@@ -43,6 +43,10 @@ class BaseAnimation {
         }
     }
 
+    set duration(duration) { // jshint ignore:line
+        // no-op
+    }
+
     get duration() {
         return 0;
     }

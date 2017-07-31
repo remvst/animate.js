@@ -417,4 +417,67 @@ describe('a timeline', () => {
         expect(tl.finished).toBe(true);
     });
 
+    it('does not call the same callback twice', () => {
+        const callback = jasmine.createSpy('callback');
+        const tl = new Timeline()
+            .wait(1)
+            .add(callback)
+            .wait(1)
+
+        tl.cycle(1);
+        tl.cycle(0);
+
+        expect(callback.calls.count()).toBe(1);
+    });
+
+    describe('can have its duration changed', () => {
+
+        it('while not started', () => {
+            const object = {};
+            const action1 = jasmine.createSpy('action1');
+            const action2 = jasmine.createSpy('action2');
+            const animation = new Animation(object).interp('foo', 0, 10).during(1);
+            const tl = new Timeline()
+                .add(action1)
+                .wait(1)
+                .add(animation)
+                .wait(1)
+                .add(action2);
+
+            expect(tl.duration).toBe(3);
+
+            tl.duration = 2;
+
+            expect(tl.duration).toBe(2);
+            expect(animation.duration).toBe(2 / 3);
+        });
+
+        it('while already started', () => {
+            const object1 = {};
+            const object2 = {};
+            const action = jasmine.createSpy('action');
+            const animation1 = new Animation(object1).interp('foo', 0, 10).during(2);
+            const animation2 = new Animation(object2).interp('foo', 0, 10).during(2);
+            const tl = new Timeline()
+                .add(animation1)
+                .add(animation2)
+                .wait(2)
+                .add(action);
+
+            expect(tl.duration).toBe(6);
+
+            tl.cycle(1.5);
+
+            tl.duration = 3;
+
+            tl.cycle(0);
+
+            expect(tl.duration).toBe(3);
+            expect(animation2.duration).toBe(1);
+            expect(object2.foo).toBe(5);
+            expect(action).not.toHaveBeenCalled();
+        });
+
+    });
+
 });

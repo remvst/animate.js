@@ -25,6 +25,10 @@ class Loop extends BaseAnimation {
         }
     }
 
+    set duration(duration) { // jshint ignore:line
+        throw new Error('Cannot set duration of a loop');
+    }
+
     get duration() {
         return Infinity;
     }

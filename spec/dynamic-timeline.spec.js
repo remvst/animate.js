@@ -89,4 +89,39 @@ describe('a dynamic timeline', () => {
         expect(child.skip).toHaveBeenCalled();
     });
 
+    it('can be set a new duration while not started', () => {
+        const child = new Timeline().wait(5);
+        const dtl = new DynamicTimeline(10, () => child);
+
+        dtl.duration = 5;
+
+        expect(dtl.duration).toBe(5);
+        expect(child.duration).toBe(5);
+    });
+
+    it('will set the child duration when building', () => {
+        const child = new Timeline().wait(5);
+        const dtl = new DynamicTimeline(10, () => child);
+
+        dtl.duration = 5;
+        dtl.duration = 1;
+
+        dtl.cycle(0);
+
+        expect(dtl.duration).toBe(1);
+        expect(child.duration).toBe(0.5);
+    });
+
+    it('can be set a new duration while running', () => {
+        const child = new Timeline().wait(5);
+        const dtl = new DynamicTimeline(10, () => child);
+
+        dtl.cycle(2)
+
+        dtl.duration = 5;
+
+        expect(dtl.duration).toBe(5);
+        expect(child.duration).toBe(2.5);
+    });
+
 });
