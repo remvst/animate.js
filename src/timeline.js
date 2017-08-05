@@ -115,16 +115,15 @@ class Timeline extends BaseAnimation {
         super.cancel();
 
         this._children.forEach(child => {
-            child.animation.cancel()
+            child.animation.cancel();
         });
 
         this._runningChildren.forEach(child => {
-            child.cancel()
+            child.cancel();
         });
     }
 
     set duration(duration) {
-        const previousDuration = this._duration;
         const durationRatio = duration / this._duration;
 
         this._duration = duration;

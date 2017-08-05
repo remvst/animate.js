@@ -30,7 +30,6 @@ class DynamicTimeline extends BaseAnimation {
     }
 
     set duration(duration) {
-        const previousDuration = this._duration;
         const durationRatio = duration / this._duration;
 
         this._duration = duration;
