@@ -26,7 +26,7 @@ class Animation extends BaseAnimation {
         this._elapsed = 0;
     }
 
-    interp(property, fromValue, toValue, easing) {
+    setProperty(property) {
         this._property = property;
         this._propertyParent = this._object;
 
@@ -36,13 +36,44 @@ class Animation extends BaseAnimation {
         }
 
         this._actualProperty = splitProperty[splitProperty.length - 1];
+    }
 
+    setFromToEasing(fromValue, toValue, easing) {
         this._fromValue = fromValue;
         this._toValue = toValue;
 
         this._easing = easing || Easing.linear;
 
         return this;
+    }
+
+    currentValue() {
+        return this._propertyParent[this._actualProperty];
+    }
+
+    interp(property, fromValue, toValue, easing) {
+        this.setProperty(property);
+        return this.setFromToEasing(fromValue, toValue, easing);
+    }
+
+    interpFrom(property, fromValue, easing) {
+        this.setProperty(property);
+        return this.setFromToEasing(fromValue, this.currentValue(), easing);
+    }
+
+    interpFromOffset(property, fromOffset, easing) {
+        this.setProperty(property);
+        return this.setFromToEasing(this.currentValue() + fromOffset, this.currentValue(), easing);
+    }
+
+    interpTo(property, toValue, easing) {
+        this.setProperty(property);
+        return this.setFromToEasing(this.currentValue(), toValue, easing);
+    }
+
+    interpToOffset(property, toOffset, easing) {
+        this.setProperty(property);
+        return this.setFromToEasing(this.currentValue(), this.currentValue() + toOffset, easing);
     }
 
     apply(applyFunction) {

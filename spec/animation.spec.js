@@ -197,4 +197,60 @@ describe('an animation', () => {
         expect(object.bar).toBe(5);
     });
 
+    it('can interpolate from a value to the current one', () => {
+        const object = {'x': 0};
+        const easing = jasmine.createSpy().and.returnValue(5);
+
+        const animation = new Animation(object)
+            .interpFrom('x', 100, easing)
+            .during(20);
+
+        animation.cycle(10);
+
+        expect(object.x).toBe(5);
+        expect(easing).toHaveBeenCalledWith(10, 100, -100, 20);
+    });
+
+    it('can interpolate from a value offset to the current offset', () => {
+        const object = {'x': 100};
+        const easing = jasmine.createSpy().and.returnValue(5);
+
+        const animation = new Animation(object)
+            .interpFromOffset('x', 50, easing)
+            .during(20);
+
+        animation.cycle(10);
+
+        expect(object.x).toBe(5);
+        expect(easing).toHaveBeenCalledWith(10, 150, -50, 20);
+    });
+
+    it('can interpolate to a value from the current one', () => {
+        const object = {'x': 0};
+        const easing = jasmine.createSpy().and.returnValue(5);
+
+        const animation = new Animation(object)
+            .interpTo('x', 100, easing)
+            .during(20);
+
+        animation.cycle(10);
+
+        expect(object.x).toBe(5);
+        expect(easing).toHaveBeenCalledWith(10, 0, 100, 20);
+    });
+
+    it('can interpolate to an offset from the current value', () => {
+        const object = {'x': 100};
+        const easing = jasmine.createSpy().and.returnValue(5);
+
+        const animation = new Animation(object)
+            .interpToOffset('x', 50, easing)
+            .during(20);
+
+        animation.cycle(10);
+
+        expect(object.x).toBe(5);
+        expect(easing).toHaveBeenCalledWith(10, 100, 50, 20);
+    });
+
 });
