@@ -15,7 +15,9 @@ class InterpolationPool {
         let i = 0;
         while (this._interpolations[i]) {
             const interpolation = this._interpolations[i];
-            interpolation.cycle(e);
+            if (!interpolation.finished) {
+                interpolation.cycle(e);
+            }
             if (!interpolation.finished) {
                 i++;
             } else {
