@@ -1,5 +1,5 @@
 {
-  "name": "animate",
+  "name": "@remvst/animate.js",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,6 @@
     "coverage": "istanbul cover ./node_modules/jasmine/bin/jasmine.js"
   },
   "author": "",
-  "license": "ISC",
   "devDependencies": {
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.3"
