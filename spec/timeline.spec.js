@@ -313,6 +313,8 @@ describe('a timeline', () => {
 
         expect(a1.cancel).toHaveBeenCalled();
         expect(a2.cancel).toHaveBeenCalled();
+
+        expect(tl.finished).toBe(true);
     });
 
     it('runs actions only once', () => {

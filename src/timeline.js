@@ -121,6 +121,9 @@ class Timeline extends BaseAnimation {
         this._runningChildren.forEach(child => {
             child.cancel();
         });
+
+        this._children = [];
+        this._runningChildren = [];
     }
 
     set duration(duration) {
