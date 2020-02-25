@@ -4,7 +4,7 @@ const BaseAnimation = require('./base-animation');
 const Easing = require('./easing');
 
 const defaultApply = function(easing, duration, fromValue, toValue, elapsed) {
-    return easing(elapsed, fromValue, toValue - fromValue, duration);
+    return easing(elapsed / duration) * (toValue - fromValue) + fromValue;
 };
 
 class Animation extends BaseAnimation {

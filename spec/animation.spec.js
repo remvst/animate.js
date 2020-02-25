@@ -111,7 +111,7 @@ describe('an animation', () => {
     });
 
     it('can have a custom easing function', () => {
-        const easing = jasmine.createSpy().and.returnValue(123);
+        const easing = jasmine.createSpy().and.returnValue(0.5);
 
         const animation = new Animation(object)
             .interp('foo', 12, 14, easing)
@@ -119,8 +119,8 @@ describe('an animation', () => {
 
         animation.cycle(5);
 
-        expect(object.foo).toBe(123);
-        expect(easing).toHaveBeenCalledWith(5, 12, 2, 10);
+        expect(object.foo).toBe(13);
+        expect(easing).toHaveBeenCalledWith(0.5);
     });
 
     it('can have a progress callback', () => {
@@ -199,58 +199,50 @@ describe('an animation', () => {
 
     it('can interpolate from a value to the current one', () => {
         const object = {'x': 0};
-        const easing = jasmine.createSpy().and.returnValue(5);
 
         const animation = new Animation(object)
-            .interpFrom('x', 100, easing)
+            .interpFrom('x', 100)
             .during(20);
 
         animation.cycle(10);
 
-        expect(object.x).toBe(5);
-        expect(easing).toHaveBeenCalledWith(10, 100, -100, 20);
+        expect(object.x).toBe(50);
     });
 
-    it('can interpolate from a value offset to the current offset', () => {
+    it('can interpolate from a value offset to the current value', () => {
         const object = {'x': 100};
-        const easing = jasmine.createSpy().and.returnValue(5);
 
         const animation = new Animation(object)
-            .interpFromOffset('x', 50, easing)
+            .interpFromOffset('x', 50)
             .during(20);
 
         animation.cycle(10);
 
-        expect(object.x).toBe(5);
-        expect(easing).toHaveBeenCalledWith(10, 150, -50, 20);
+        expect(object.x).toBe(125);
     });
 
     it('can interpolate to a value from the current one', () => {
         const object = {'x': 0};
-        const easing = jasmine.createSpy().and.returnValue(5);
 
         const animation = new Animation(object)
-            .interpTo('x', 100, easing)
+            .interpTo('x', 100)
             .during(20);
 
         animation.cycle(10);
 
-        expect(object.x).toBe(5);
-        expect(easing).toHaveBeenCalledWith(10, 0, 100, 20);
+        expect(object.x).toBe(50);
     });
 
     it('can interpolate to an offset from the current value', () => {
         const object = {'x': 100};
-        const easing = jasmine.createSpy().and.returnValue(5);
 
         const animation = new Animation(object)
-            .interpToOffset('x', 50, easing)
+            .interpToOffset('x', 50)
             .during(20);
 
         animation.cycle(10);
 
-        expect(object.x).toBe(5);
-        expect(easing).toHaveBeenCalledWith(10, 100, 50, 20);
+        expect(object.x).toBe(125);
     });
 
 });
