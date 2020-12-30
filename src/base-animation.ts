@@ -1,6 +1,13 @@
 'use strict';
 
-class BaseAnimation {
+import InterpolationPool from './interpolation-pool';
+
+export default class BaseAnimation {
+
+    protected _cancelled: boolean;
+    protected _elapsed: number;
+    protected _actualElapsed: number;
+    protected _interpolationPool: InterpolationPool | null;
 
     constructor() {
         this._cancelled = false;
@@ -22,28 +29,22 @@ class BaseAnimation {
         this._interpolationPool = null;
     }
 
-    run(pool) {
+    run(pool: InterpolationPool) {
         this._interpolationPool = pool;
         pool.add(this);
         return this;
     }
 
-    runAsMain(pool) {
-        this.run(pool);
-        pool.setMainTimeline(this);
-        return this;
-    }
-
-    cycle(e) { // jshint ignore:line
-        this._elapsed += e;
-        this._actualElapsed += e;
+    cycle(elapsed: number) { // jshint ignore:line
+        this._elapsed += elapsed;
+        this._actualElapsed += elapsed;
 
         if (this._elapsed >= this.duration) {
             this._elapsed = this.duration;
         }
     }
 
-    set duration(duration) { // jshint ignore:line
+    set duration(duration: number) { // jshint ignore:line
         // no-op
     }
 
@@ -64,5 +65,3 @@ class BaseAnimation {
     }
 
 }
-
-module.exports = BaseAnimation;

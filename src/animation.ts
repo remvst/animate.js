@@ -1,33 +1,51 @@
 'use strict';
 
-const BaseAnimation = require('./base-animation');
-const Easing = require('./easing');
+import BaseAnimation from './base-animation';
+import { linear } from './easing';
 
-const defaultApply = function(easing, duration, fromValue, toValue, elapsed) {
+const defaultApply = function(
+    easing: (t: number) => number,
+    duration: number,
+    fromValue: number,
+    toValue: number,
+    elapsed: number
+) {
     return easing(elapsed / duration) * (toValue - fromValue) + fromValue;
 };
 
-class Animation extends BaseAnimation {
+export default class Animation extends BaseAnimation {
 
-    constructor(object) {
+    private readonly _object: any;
+    private _propertyParent: any = null;
+    private _actualProperty: string | null = null;
+    private _duration: number;
+    private _toValue: number;
+    private _fromValue: number;
+    private _easing: (t: number) => number;
+    private _progress: ((t: number) => void) | null;
+    private _applyFunction: ((
+        easing: (t: number) => number,
+        duration: number,
+        fromValue: number,
+        toValue: number,
+        elapsed: number
+    ) => any) | null;
+
+    constructor(object: any) {
         super();
 
         this._object = object;
-        this._delay = 0;
         this._duration = 1;
         this._toValue = 0;
         this._fromValue = 0;
-        this._easing = null;
-        this._onFinish = null;
+        this._easing = linear;
         this._progress = null;
         this._applyFunction = defaultApply;
-        this._overrides = true;
 
         this._elapsed = 0;
     }
 
-    setProperty(property) {
-        this._property = property;
+    setProperty(property: string) {
         this._propertyParent = this._object;
 
         const splitProperty = property.split('.');
@@ -38,65 +56,71 @@ class Animation extends BaseAnimation {
         this._actualProperty = splitProperty[splitProperty.length - 1];
     }
 
-    setFromToEasing(fromValue, toValue, easing) {
+    setFromToEasing(fromValue: number, toValue: number, easing: (t: number) => number = linear) {
         this._fromValue = fromValue;
         this._toValue = toValue;
 
-        this._easing = easing || Easing.linear;
+        this._easing = easing;
 
         return this;
     }
 
-    currentValue() {
-        return this._propertyParent[this._actualProperty];
+    currentValue(): any {
+        return this._propertyParent[this._actualProperty!];
     }
 
-    interp(property, fromValue, toValue, easing) {
+    interp(property: string, fromValue: number, toValue: number, easing: (t: number) => number = linear) {
         this.setProperty(property);
         return this.setFromToEasing(fromValue, toValue, easing);
     }
 
-    interpFrom(property, fromValue, easing) {
+    interpFrom(property: string, fromValue: number, easing: (t: number) => number = linear) {
         this.setProperty(property);
         return this.setFromToEasing(fromValue, this.currentValue(), easing);
     }
 
-    interpFromOffset(property, fromOffset, easing) {
+    interpFromOffset(property: string, fromOffset: number, easing: (t: number) => number = linear) {
         this.setProperty(property);
         return this.setFromToEasing(this.currentValue() + fromOffset, this.currentValue(), easing);
     }
 
-    interpTo(property, toValue, easing) {
+    interpTo(property: string, toValue: number, easing: (t: number) => number = linear) {
         this.setProperty(property);
         return this.setFromToEasing(this.currentValue(), toValue, easing);
     }
 
-    interpToOffset(property, toOffset, easing) {
+    interpToOffset(property: string, toOffset: number, easing: (t: number) => number = linear) {
         this.setProperty(property);
         return this.setFromToEasing(this.currentValue(), this.currentValue() + toOffset, easing);
     }
 
-    apply(applyFunction) {
+    apply(applyFunction: (
+        easing: (t: number) => number,
+        duration: number,
+        fromValue: number,
+        toValue: number,
+        elapsed: number
+    ) => void): this {
         this._applyFunction = applyFunction;
         return this;
     }
 
-    during(duration) {
+    during(duration: number): this {
         this._duration = duration;
         return this;
     }
 
-    progress(callback) {
+    progress(callback: (t: number) => void): this {
         this._progress = callback;
         return this;
     }
 
-    cycle(e) {
+    cycle(elapsed: number) {
         if (this.finished) {
             return;
         }
 
-        super.cycle(e);
+        super.cycle(elapsed);
         this.applyProgress();
     }
 
@@ -106,7 +130,7 @@ class Animation extends BaseAnimation {
     }
 
     applyProgress() {
-        this._propertyParent[this._actualProperty] = this._applyFunction(
+        this._propertyParent[this._actualProperty!] = this._applyFunction!(
             this._easing,
             this._duration,
             this._fromValue,
@@ -119,7 +143,7 @@ class Animation extends BaseAnimation {
     }
 
     init() {
-        this._propertyParent[this._actualProperty] = this._applyFunction(
+        this._propertyParent[this._actualProperty!] = this._applyFunction!(
             this._easing,
             this._duration,
             this._fromValue,
@@ -137,5 +161,3 @@ class Animation extends BaseAnimation {
         return this._duration;
     }
 }
-
-module.exports = Animation;

@@ -1,10 +1,15 @@
 "use strict";
 
-const BaseAnimation = require('./base-animation');
+import BaseAnimation from './base-animation';
 
-class DynamicTimeline extends BaseAnimation {
+export default class DynamicTimeline extends BaseAnimation {
 
-    constructor(duration, buildFunc) {
+    private _built: BaseAnimation | null;
+    private _duration: number;
+    private _buildFunc: () => BaseAnimation;
+    private _builtDurationFactor: number;
+
+    constructor(duration: number, buildFunc: () => BaseAnimation) {
         super();
         this._built = null;
         this._duration = duration;
@@ -12,21 +17,21 @@ class DynamicTimeline extends BaseAnimation {
         this._builtDurationFactor = 1;
     }
 
-    cycle(e) {
-        super.cycle(e);
+    cycle(elapsed: number) {
+        super.cycle(elapsed);
 
         if (!this._built) {
-            this._built = this._buildFunc(this);
+            this._built = this._buildFunc();
             this._built.duration *= this._builtDurationFactor;
         }
 
-        this._built.cycle(e);
+        this._built.cycle(elapsed);
     }
 
     skip() {
         super.skip();
         this.cycle(0); // make sure we built
-        this._built.skip();
+        this._built!.skip();
     }
 
     set duration(duration) {
@@ -58,5 +63,3 @@ class DynamicTimeline extends BaseAnimation {
     }
 
 }
-
-module.exports = DynamicTimeline;

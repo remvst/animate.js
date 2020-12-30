@@ -1,10 +1,14 @@
 'use strict';
 
-const BaseAnimation = require('./base-animation');
+import BaseAnimation from './base-animation';
 
-class Loop extends BaseAnimation {
+export default class Loop extends BaseAnimation {
 
-    constructor(interval, callback, initialDelay) {
+    private _interval: number;
+    private _nextCall: number;
+    private _callback: () => void;
+
+    constructor(interval: number, callback: () => void, initialDelay: number) {
         super();
 
         if (interval <= 0) {
@@ -17,15 +21,15 @@ class Loop extends BaseAnimation {
         this._cancelled = false;
     }
 
-    cycle(e) {
-        this._nextCall -= e;
+    cycle(elapsed: number) {
+        this._nextCall -= elapsed;
         while (this._nextCall <= 0) {
             this._nextCall += this._interval;
             this._callback();
         }
     }
 
-    set duration(duration) { // jshint ignore:line
+    set duration(duration: number) { // jshint ignore:line
         throw new Error('Cannot set duration of a loop');
     }
 
@@ -34,5 +38,3 @@ class Loop extends BaseAnimation {
     }
 
 }
-
-module.exports = Loop;

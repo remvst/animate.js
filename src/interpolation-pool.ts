@@ -1,22 +1,26 @@
 'use strict';
 
-const Timeline = require('./timeline');
+import Timeline from './timeline';
+import BaseAnimation from './base-animation';
 
-class InterpolationPool {
+export default class InterpolationPool {
+
+    private _interpolations: BaseAnimation[];
+    private _mainTimeline: Timeline | null;
 
     constructor() {
         this._interpolations = [];
         this._mainTimeline = null;
     }
 
-    cycle(e) {
+    cycle(elapsed: number) {
         // Loop is kinda weird because we want the _interpolations to be performed
         // in the same order they were added
         let i = 0;
         while (this._interpolations[i]) {
             const interpolation = this._interpolations[i];
             if (!interpolation.finished) {
-                interpolation.cycle(e);
+                interpolation.cycle(elapsed);
             }
             if (!interpolation.finished) {
                 i++;
@@ -30,7 +34,7 @@ class InterpolationPool {
         }
     }
 
-    add(interpolation) {
+    add(interpolation: BaseAnimation) {
         this._interpolations.push(interpolation);
     }
 
@@ -42,11 +46,11 @@ class InterpolationPool {
         this._mainTimeline.skip();
     }
 
-    delay(delay, action) {
-        new Timeline().add(delay, action).run(this);
+    delay(delay: number, animation: BaseAnimation) {
+        new Timeline().add(delay, animation).run(this);
     }
 
-    setMainTimeline(timeline) {
+    setMainTimeline(timeline: Timeline) {
         this._mainTimeline = timeline;
     }
 
@@ -57,5 +61,3 @@ class InterpolationPool {
     }
 
 }
-
-module.exports = InterpolationPool;
