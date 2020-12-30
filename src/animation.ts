@@ -1,10 +1,10 @@
 'use strict';
 
 import BaseAnimation from './base-animation';
-import { linear } from './easing';
+import { linear, Easing } from './easing';
 
 const defaultApply = function(
-    easing: (t: number) => number,
+    easing: Easing,
     duration: number,
     fromValue: number,
     toValue: number,
@@ -21,10 +21,10 @@ export default class Animation extends BaseAnimation {
     private _duration: number;
     private _toValue: number;
     private _fromValue: number;
-    private _easing: (t: number) => number;
+    private _easing: Easing;
     private _progress: ((t: number) => void) | null;
     private _applyFunction: ((
-        easing: (t: number) => number,
+        easing: Easing,
         duration: number,
         fromValue: number,
         toValue: number,
@@ -56,7 +56,7 @@ export default class Animation extends BaseAnimation {
         this._actualProperty = splitProperty[splitProperty.length - 1];
     }
 
-    setFromToEasing(fromValue: number, toValue: number, easing: (t: number) => number = linear) {
+    setFromToEasing(fromValue: number, toValue: number, easing: Easing = linear) {
         this._fromValue = fromValue;
         this._toValue = toValue;
 
@@ -69,33 +69,33 @@ export default class Animation extends BaseAnimation {
         return this._propertyParent[this._actualProperty!];
     }
 
-    interp(property: string, fromValue: number, toValue: number, easing: (t: number) => number = linear) {
+    interp(property: string, fromValue: number, toValue: number, easing: Easing = linear) {
         this.setProperty(property);
         return this.setFromToEasing(fromValue, toValue, easing);
     }
 
-    interpFrom(property: string, fromValue: number, easing: (t: number) => number = linear) {
+    interpFrom(property: string, fromValue: number, easing: Easing = linear) {
         this.setProperty(property);
         return this.setFromToEasing(fromValue, this.currentValue(), easing);
     }
 
-    interpFromOffset(property: string, fromOffset: number, easing: (t: number) => number = linear) {
+    interpFromOffset(property: string, fromOffset: number, easing: Easing = linear) {
         this.setProperty(property);
         return this.setFromToEasing(this.currentValue() + fromOffset, this.currentValue(), easing);
     }
 
-    interpTo(property: string, toValue: number, easing: (t: number) => number = linear) {
+    interpTo(property: string, toValue: number, easing: Easing = linear) {
         this.setProperty(property);
         return this.setFromToEasing(this.currentValue(), toValue, easing);
     }
 
-    interpToOffset(property: string, toOffset: number, easing: (t: number) => number = linear) {
+    interpToOffset(property: string, toOffset: number, easing: Easing = linear) {
         this.setProperty(property);
         return this.setFromToEasing(this.currentValue(), this.currentValue() + toOffset, easing);
     }
 
     apply(applyFunction: (
-        easing: (t: number) => number,
+        easing: Easing,
         duration: number,
         fromValue: number,
         toValue: number,

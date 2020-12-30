@@ -2,6 +2,8 @@
 
 /* istanbul ignore next */
 
+export type Easing = (t: number) => number;
+
 // no easing, no acceleration
 export function linear(t: number): number { return t; };
 // accelerating from zero velocity
