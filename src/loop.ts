@@ -8,7 +8,7 @@ export default class Loop extends BaseAnimation {
     private _nextCall: number;
     private _callback: () => void;
 
-    constructor(interval: number, callback: () => void, initialDelay: number) {
+    constructor(interval: number, callback: () => void, initialDelay: number | undefined = undefined) {
         super();
 
         if (interval <= 0) {

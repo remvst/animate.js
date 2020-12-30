@@ -69,27 +69,27 @@ export default class Animation extends BaseAnimation {
         return this._propertyParent[this._actualProperty!];
     }
 
-    interp(property: string, fromValue: number, toValue: number, easing: Easing = linear) {
+    interp(property: string, fromValue: number, toValue: number, easing: Easing = linear): this {
         this.setProperty(property);
         return this.setFromToEasing(fromValue, toValue, easing);
     }
 
-    interpFrom(property: string, fromValue: number, easing: Easing = linear) {
+    interpFrom(property: string, fromValue: number, easing: Easing = linear): this {
         this.setProperty(property);
         return this.setFromToEasing(fromValue, this.currentValue(), easing);
     }
 
-    interpFromOffset(property: string, fromOffset: number, easing: Easing = linear) {
+    interpFromOffset(property: string, fromOffset: number, easing: Easing = linear): this {
         this.setProperty(property);
         return this.setFromToEasing(this.currentValue() + fromOffset, this.currentValue(), easing);
     }
 
-    interpTo(property: string, toValue: number, easing: Easing = linear) {
+    interpTo(property: string, toValue: number, easing: Easing = linear): this {
         this.setProperty(property);
         return this.setFromToEasing(this.currentValue(), toValue, easing);
     }
 
-    interpToOffset(property: string, toOffset: number, easing: Easing = linear) {
+    interpToOffset(property: string, toOffset: number, easing: Easing = linear): this {
         this.setProperty(property);
         return this.setFromToEasing(this.currentValue(), this.currentValue() + toOffset, easing);
     }

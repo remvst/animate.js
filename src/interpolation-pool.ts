@@ -46,7 +46,7 @@ export default class InterpolationPool {
         this._mainTimeline.skip();
     }
 
-    delay(delay: number, animation: BaseAnimation) {
+    delay(delay: number, animation: BaseAnimation | (() => void)) {
         new Timeline().add(delay, animation).run(this);
     }
 

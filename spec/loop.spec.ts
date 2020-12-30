@@ -1,6 +1,6 @@
 'use strict';
 
-const Loop = require('../src/loop');
+import { Loop } from '../src/index';
 
 describe('a loop', () => {
 
