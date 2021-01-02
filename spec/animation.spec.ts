@@ -1,10 +1,9 @@
-'use strict';
-
-const Animation = require('../src/animation');
+import { Animation } from '../src/index';
+import { Easing } from '../src/easing';
 
 describe('an animation', () => {
 
-    let object;
+    let object: any;
 
     beforeEach(function() {
         object = {
@@ -138,7 +137,7 @@ describe('an animation', () => {
 
     it('can have a custom apply function', () => {
         const apply = jasmine.createSpy();
-        const easing = {};
+        const easing = {} as Easing;
 
         const animation = new Animation(object)
             .interp('foo', 0, 1, easing)

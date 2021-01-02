@@ -1,0 +1,31 @@
+import BaseAnimation from './base-animation';
+import { Easing } from './easing';
+export default class Animation extends BaseAnimation {
+    private readonly _object;
+    private _propertyParent;
+    private _actualProperty;
+    private _duration;
+    private _toValue;
+    private _fromValue;
+    private _easing;
+    private _progress;
+    private _applyFunction;
+    constructor(object: any);
+    setProperty(property: string): void;
+    setFromToEasing(fromValue: number, toValue: number, easing?: Easing): this;
+    currentValue(): any;
+    interp(property: string, fromValue: number, toValue: number, easing?: Easing): this;
+    interpFrom(property: string, fromValue: number, easing?: Easing): this;
+    interpFromOffset(property: string, fromOffset: number, easing?: Easing): this;
+    interpTo(property: string, toValue: number, easing?: Easing): this;
+    interpToOffset(property: string, toOffset: number, easing?: Easing): this;
+    apply(applyFunction: (easing: Easing, duration: number, fromValue: number, toValue: number, elapsed: number) => void): this;
+    during(duration: number): this;
+    progress(callback: (t: number) => void): this;
+    cycle(elapsed: number): void;
+    skip(): void;
+    applyProgress(): void;
+    init(): this;
+    set duration(duration: number);
+    get duration(): number;
+}

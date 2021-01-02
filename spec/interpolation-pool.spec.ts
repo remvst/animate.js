@@ -1,19 +1,17 @@
 'use strict';
 
-const InterpolationPool = require('../src/interpolation-pool');
-const Animation = require('../src/animation');
-const Timeline = require('../src/timeline');
+import { InterpolationPool, Animation, Timeline } from '../src/index';
 
 describe('an interpolation pool', () => {
 
-    let pool;
+    let pool: InterpolationPool;
 
     beforeEach(() => {
         pool = new InterpolationPool();
     });
 
     it('can have animations', () => {
-        const a = new Animation()
+        const a = new Animation({})
             .run(pool);
 
         expect(pool.size).toBe(1);

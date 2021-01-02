@@ -1,8 +1,6 @@
 'use strict';
 
-const DynamicTimeline = require('../src/dynamic-timeline');
-const Timeline = require('../src/timeline');
-const Animation = require('../src/animation');
+import { DynamicTimeline, Timeline, Animation } from '../src/index';
 
 describe('a dynamic timeline', () => {
 
@@ -19,8 +17,8 @@ describe('a dynamic timeline', () => {
     it('can be built on its first cycle', () => {
         const dtl = new DynamicTimeline(123, () => {
             return new Timeline()
-                .add(new Animation({}).interp('foo', 0, 1).during(1))
-                .add(new Animation({}).interp('foo', 0, 1).during(1));
+                .append(new Animation({}).interp('foo', 0, 1).during(1))
+                .append(new Animation({}).interp('foo', 0, 1).during(1));
         });
 
         dtl.cycle(0);
@@ -35,15 +33,15 @@ describe('a dynamic timeline', () => {
 
         const dtl = new DynamicTimeline(123, () => {
             return new Timeline()
-                .add(new Animation(object).interp('foo', 0, 1).during(1))
-                .add(new Animation(object).interp('foo', 0, 1).during(1));
+                .append(new Animation(object).interp('foo', 0, 1).during(1))
+                .append(new Animation(object).interp('foo', 0, 1).during(1));
         });
 
         dtl.cycle(0.5);
 
         expect(dtl.size).toBe(2);
         expect(dtl.finished).toBe(false);
-        expect(object.foo).toBe(0.5);
+        expect((object as any).foo).toBe(0.5);
     });
 
     it('only builds once', () => {
@@ -60,7 +58,7 @@ describe('a dynamic timeline', () => {
     });
 
     it('isn\'t finished if it hasn\'t been built yet', () => {
-        const dtl = new DynamicTimeline(123, () => {});
+        const dtl = new DynamicTimeline(123, () => { throw new Error(); });
 
         expect(dtl.finished).toBe(false);
     });
