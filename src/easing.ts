@@ -1,5 +1,3 @@
-"use strict";
-
 /* istanbul ignore next */
 
 export type Easing = (t: number) => number;

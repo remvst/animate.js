@@ -1,5 +1,3 @@
-"use strict";
-
 import InterpolationPool from "./interpolation-pool";
 
 export default class BaseAnimation {

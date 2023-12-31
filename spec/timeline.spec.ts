@@ -1,8 +1,14 @@
-"use strict";
-
 import { Animation, DynamicTimeline, Timeline } from "../src/index";
 
+interface TestObject {
+    foo: number;
+}
+
 describe("a timeline", () => {
+    function object(): TestObject {
+        return { foo: 43 };
+    }
+
     describe("can be instantiated and ", () => {
         it("be empty", () => {
             const tl = new Timeline();
@@ -19,14 +25,19 @@ describe("a timeline", () => {
         });
 
         it("add animations", () => {
-            const tl = new Timeline().append(new Animation({}).during(123));
+            const tl = new Timeline().append(
+                new Animation(object()).during(123),
+            );
 
             expect(tl.duration).toBe(123);
             expect(tl.size).toBe(1);
         });
 
         it("add animations at specific times", () => {
-            const tl = new Timeline().add(123, new Animation({}).during(3));
+            const tl = new Timeline().add(
+                123,
+                new Animation(object()).during(3),
+            );
 
             expect(tl.duration).toBe(126);
             expect(tl.size).toBe(1);
@@ -41,8 +52,8 @@ describe("a timeline", () => {
 
         it("have a series of animations", () => {
             const tl = new Timeline()
-                .append(new Animation({}).during(3))
-                .append(new Animation({}).during(5));
+                .append(new Animation(object()).during(3))
+                .append(new Animation(object()).during(5));
 
             expect(tl.duration).toBe(8);
             expect(tl.size).toBe(2);
@@ -50,8 +61,8 @@ describe("a timeline", () => {
 
         it("have a series of animations at its start", () => {
             const tl = new Timeline()
-                .add(0, new Animation({}).during(3))
-                .add(0, new Animation({}).during(5));
+                .add(0, new Animation(object()).during(3))
+                .add(0, new Animation(object()).during(5));
 
             expect(tl.duration).toBe(5);
             expect(tl.size).toBe(2);
@@ -60,9 +71,9 @@ describe("a timeline", () => {
         it("have a series of animations with delays", () => {
             const tl = new Timeline()
                 .wait(2)
-                .append(new Animation({}).during(3))
+                .append(new Animation(object()).during(3))
                 .wait(3)
-                .append(new Animation({}).during(5));
+                .append(new Animation(object()).during(5));
 
             expect(tl.duration).toBe(13);
             expect(tl.size).toBe(2);
@@ -71,11 +82,13 @@ describe("a timeline", () => {
         it("have a series of animations with delays and breakpoints", () => {
             const tl = new Timeline()
                 .wait(2)
-                .append(new Animation({}).during(3))
+                .append(new Animation(object()).during(3))
                 .addBreakpoint()
                 .wait(3)
-                .append(new Timeline().append(new Animation({}).during(2)))
-                .append(new Animation({}).during(5));
+                .append(
+                    new Timeline().append(new Animation(object()).during(2)),
+                )
+                .append(new Animation(object()).during(5));
 
             expect(tl.duration).toBe(15);
             expect(tl.size).toBe(3);
@@ -83,16 +96,23 @@ describe("a timeline", () => {
 
         it("can calculate its size when running", () => {
             const tl = new Timeline()
-                .append(new Animation({}).interp("foo", 0, 1).during(2))
+                .append(new Animation(object()).interp("foo", 0, 1).during(2))
                 .append(
                     new Timeline()
-                        .add(0, new Animation({}).interp("foo", 0, 1).during(3))
                         .add(
                             0,
-                            new Animation({}).interp("foo", 0, 1).during(4),
+                            new Animation(object())
+                                .interp("foo", 0, 1)
+                                .during(3),
+                        )
+                        .add(
+                            0,
+                            new Animation(object())
+                                .interp("foo", 0, 1)
+                                .during(4),
                         ),
                 )
-                .append(new Animation({}).interp("foo", 0, 1).during(5));
+                .append(new Animation(object()).interp("foo", 0, 1).during(5));
 
             tl.cycle(3);
 
@@ -102,7 +122,9 @@ describe("a timeline", () => {
 
     describe("can be run with a linear structure", () => {
         let f1: jasmine.Spy, f2: jasmine.Spy, f3: jasmine.Spy;
-        let a1: Animation, a2: Animation, a3: Animation;
+        let a1: Animation<TestObject>,
+            a2: Animation<TestObject>,
+            a3: Animation<TestObject>;
         let tl: Timeline;
 
         beforeEach(() => {
@@ -110,9 +132,9 @@ describe("a timeline", () => {
             f2 = jasmine.createSpy("f2");
             f3 = jasmine.createSpy("f3");
 
-            a1 = new Animation({}).interp("foo", 0, 1).during(1);
-            a2 = new Animation({}).interp("foo", 0, 1).during(2);
-            a3 = new Animation({}).interp("foo", 0, 1).during(3);
+            a1 = new Animation(object()).interp("foo", 0, 1).during(1);
+            a2 = new Animation(object()).interp("foo", 0, 1).during(2);
+            a3 = new Animation(object()).interp("foo", 0, 1).during(3);
 
             spyOn(a1, "cycle").and.callThrough();
             spyOn(a2, "cycle").and.callThrough();
@@ -205,36 +227,53 @@ describe("a timeline", () => {
     });
 
     describe("can be run with a tree structure", () => {
-        let a11: Animation,
-            a12: Animation,
-            a1: Animation,
-            a21: Animation,
-            a22: Animation;
+        let a11: Animation<TestObject>,
+            a12: Animation<TestObject>,
+            a1: Animation<TestObject>,
+            a21: Animation<TestObject>,
+            a22: Animation<TestObject>;
         let tl: Timeline, stl1: Timeline, stl2: Timeline, stl11: Timeline;
 
         beforeEach(() => {
             stl11 = new Timeline();
 
             stl1 = new Timeline()
-                .add(0, (a11 = new Animation({}).interp("foo", 0, 1).during(2)))
+                .add(
+                    0,
+                    (a11 = new Animation(object())
+                        .interp("foo", 0, 1)
+                        .during(2)),
+                )
                 .add(0, stl11)
                 .add(
                     0,
-                    (a12 = new Animation({}).interp("foo", 0, 1).during(2)),
+                    (a12 = new Animation(object())
+                        .interp("foo", 0, 1)
+                        .during(2)),
                 );
 
             stl2 = new Timeline()
-                .append((a21 = new Animation({}).interp("foo", 0, 1).during(2)))
+                .append(
+                    (a21 = new Animation(object())
+                        .interp("foo", 0, 1)
+                        .during(2)),
+                )
                 .addBreakpoint()
                 .append(
-                    (a22 = new Animation({}).interp("foo", 0, 1).during(2)),
+                    (a22 = new Animation(object())
+                        .interp("foo", 0, 1)
+                        .during(2)),
                 );
 
             tl = new Timeline()
                 .append(stl1)
                 .addBreakpoint()
                 .append(stl2)
-                .append((a1 = new Animation({}).interp("foo", 0, 1).during(3)));
+                .append(
+                    (a1 = new Animation(object())
+                        .interp("foo", 0, 1)
+                        .during(3)),
+                );
 
             spyOn(stl1, "cycle").and.callThrough();
             spyOn(a11, "cycle").and.callThrough();
@@ -300,8 +339,8 @@ describe("a timeline", () => {
     });
 
     it("can be cancelled", () => {
-        const a1 = new Animation({}).interp("foo", 0, 1).during(1);
-        const a2 = new Animation({}).interp("foo", 0, 1).during(1);
+        const a1 = new Animation(object()).interp("foo", 0, 1).during(1);
+        const a2 = new Animation(object()).interp("foo", 0, 1).during(1);
 
         spyOn(a1, "cancel");
         spyOn(a2, "cancel");
@@ -329,14 +368,14 @@ describe("a timeline", () => {
     });
 
     it("runs children in the right order", () => {
-        const c1 = new Animation({}).interp("foo", 0, 1).during(1);
-        const c2 = new Animation({}).interp("foo", 0, 1).during(1);
-        const c3 = new Animation({}).interp("foo", 0, 1).during(1);
-        const c4 = new Animation({}).interp("foo", 0, 1).during(1);
-        const c5 = new Animation({}).interp("foo", 0, 1).during(1);
-        const c6 = new Animation({}).interp("foo", 0, 1).during(1);
+        const c1 = new Animation(object()).interp("foo", 0, 1).during(1);
+        const c2 = new Animation(object()).interp("foo", 0, 1).during(1);
+        const c3 = new Animation(object()).interp("foo", 0, 1).during(1);
+        const c4 = new Animation(object()).interp("foo", 0, 1).during(1);
+        const c5 = new Animation(object()).interp("foo", 0, 1).during(1);
+        const c6 = new Animation(object()).interp("foo", 0, 1).during(1);
 
-        const order: Animation[] = [];
+        const order: Animation<TestObject>[] = [];
 
         spyOn(c1, "cycle").and.callFake(() => {
             order.push(c1);
@@ -382,13 +421,13 @@ describe("a timeline", () => {
             .add(
                 5,
                 new Timeline()
-                    .append(new Animation({}).interp("foo", 0, 1))
+                    .append(new Animation(object()).interp("foo", 0, 1))
                     .addBreakpoint(),
             )
             .add(
                 2,
                 new Timeline()
-                    .append(new Animation({}).interp("foo", 0, 1))
+                    .append(new Animation(object()).interp("foo", 0, 1))
                     .addBreakpoint(),
             );
 
@@ -433,10 +472,9 @@ describe("a timeline", () => {
 
     describe("can have its duration changed", () => {
         it("while not started", () => {
-            const object = {};
             const action1 = jasmine.createSpy("action1");
             const action2 = jasmine.createSpy("action2");
-            const animation = new Animation(object)
+            const animation = new Animation<TestObject>(object())
                 .interp("foo", 0, 10)
                 .during(1);
             const tl = new Timeline()
@@ -455,8 +493,8 @@ describe("a timeline", () => {
         });
 
         it("while already started", () => {
-            const object1 = {};
-            const object2 = {};
+            const object1 = object();
+            const object2 = object();
             const action = jasmine.createSpy("action");
             const animation1 = new Animation(object1)
                 .interp("foo", 0, 10)

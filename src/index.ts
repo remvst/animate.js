@@ -1,5 +1,3 @@
-"use strict";
-
 export { default as Action } from "./action";
 export { default as Animation } from "./animation";
 export { default as DynamicTimeline } from "./dynamic-timeline";

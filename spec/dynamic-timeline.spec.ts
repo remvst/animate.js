@@ -1,8 +1,18 @@
-"use strict";
-
 import { Animation, DynamicTimeline, Timeline } from "../src/index";
 
+interface TestObject {
+    foo: number;
+}
+
 describe("a dynamic timeline", () => {
+    let object: TestObject;
+
+    beforeEach(function () {
+        object = {
+            foo: 43,
+        };
+    });
+
     it("can be instantiated", () => {
         const build = jasmine.createSpy();
         const dtl = new DynamicTimeline(123, build);
@@ -16,8 +26,8 @@ describe("a dynamic timeline", () => {
     it("can be built on its first cycle", () => {
         const dtl = new DynamicTimeline(123, () => {
             return new Timeline()
-                .append(new Animation({}).interp("foo", 0, 1).during(1))
-                .append(new Animation({}).interp("foo", 0, 1).during(1));
+                .append(new Animation(object).interp("foo", 0, 1).during(1))
+                .append(new Animation(object).interp("foo", 0, 1).during(1));
         });
 
         dtl.cycle(0);
@@ -28,8 +38,6 @@ describe("a dynamic timeline", () => {
     });
 
     it("can be built and run", () => {
-        const object = {};
-
         const dtl = new DynamicTimeline(123, () => {
             return new Timeline()
                 .append(new Animation(object).interp("foo", 0, 1).during(1))

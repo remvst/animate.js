@@ -1,24 +1,36 @@
-"use strict";
-
 import { Animation, InterpolationPool, Timeline } from "../src/index";
+
+interface TestObject {
+    yolo: number;
+}
 
 describe("an interpolation pool", () => {
     let pool: InterpolationPool;
+
+    function object(): TestObject {
+        return { yolo: 43 };
+    }
 
     beforeEach(() => {
         pool = new InterpolationPool();
     });
 
     it("can have animations", () => {
-        const a = new Animation({}).run(pool);
+        const a = new Animation(object()).run(pool);
 
         expect(pool.size).toBe(1);
         expect(a.interpolationPool).toBe(pool);
     });
 
     it("can run animations", () => {
-        const a1 = new Animation({}).interp("yolo", 0, 1).during(2).run(pool);
-        const a2 = new Animation({}).interp("yolo", 0, 1).during(3).run(pool);
+        const a1 = new Animation(object())
+            .interp("yolo", 0, 1)
+            .during(2)
+            .run(pool);
+        const a2 = new Animation(object())
+            .interp("yolo", 0, 1)
+            .during(3)
+            .run(pool);
 
         spyOn(a1, "cycle").and.callThrough();
         spyOn(a2, "cycle").and.callThrough();
@@ -32,9 +44,18 @@ describe("an interpolation pool", () => {
     });
 
     it("can run animations", () => {
-        const a1 = new Animation({}).interp("yolo", 0, 1).during(2).run(pool);
-        const a2 = new Animation({}).interp("yolo", 0, 1).during(3).run(pool);
-        const a3 = new Animation({}).interp("yolo", 0, 1).during(4).run(pool);
+        const a1 = new Animation(object())
+            .interp("yolo", 0, 1)
+            .during(2)
+            .run(pool);
+        const a2 = new Animation(object())
+            .interp("yolo", 0, 1)
+            .during(3)
+            .run(pool);
+        const a3 = new Animation(object())
+            .interp("yolo", 0, 1)
+            .during(4)
+            .run(pool);
 
         spyOn(a1, "cycle").and.callThrough();
         spyOn(a2, "cycle").and.callThrough();

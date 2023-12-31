@@ -1,5 +1,3 @@
-"use strict";
-
 import Action from "./action";
 import BaseAnimation from "./base-animation";
 import InterpolationPool from "./interpolation-pool";

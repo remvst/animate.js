@@ -1,25 +1,15 @@
-"use strict";
-
 import BaseAnimation from "./base-animation";
 import { Easing, linear } from "./easing";
 
-const defaultApply = function (
-    easing: Easing,
-    duration: number,
-    fromValue: number,
-    toValue: number,
-    elapsed: number,
-) {
-    return easing(elapsed / duration) * (toValue - fromValue) + fromValue;
-};
-
-export default class Animation extends BaseAnimation {
+export default class Animation<ObjectType extends any> extends BaseAnimation {
     private readonly _object: any;
     private _propertyParent: any = null;
     private _actualProperty: string | null = null;
     private _duration: number;
-    private _toValue: number;
-    private _fromValue: number;
+    private _toValueGetter: () => number | null = () => null;
+    private _fromValueGetter: () => number | null = () => null;
+    private _toValue: number | null = null;
+    private _fromValue: number | null = null;
     private _easing: Easing;
     private _progress: ((t: number) => void) | null;
     private _applyFunction:
@@ -29,19 +19,29 @@ export default class Animation extends BaseAnimation {
               fromValue: number,
               toValue: number,
               elapsed: number,
-          ) => any)
+          ) => number)
         | null;
 
-    constructor(object: any) {
+    constructor(object: ObjectType) {
         super();
 
         this._object = object;
         this._duration = 1;
-        this._toValue = 0;
-        this._fromValue = 0;
+        this._toValue = null;
+        this._fromValue = null;
         this._easing = linear;
         this._progress = null;
-        this._applyFunction = defaultApply;
+        this._applyFunction = (
+            easing: Easing,
+            duration: number,
+            fromValue: number,
+            toValue: number,
+            elapsed: number,
+        ) => {
+            return (
+                easing(elapsed / duration) * (toValue - fromValue) + fromValue
+            );
+        };
 
         this._elapsed = 0;
     }
@@ -58,30 +58,34 @@ export default class Animation extends BaseAnimation {
     }
 
     setFromToEasing(
-        fromValue: number,
-        toValue: number,
+        fromValue: () => number,
+        toValue: () => number,
         easing: Easing = linear,
     ) {
-        this._fromValue = fromValue;
-        this._toValue = toValue;
+        this._fromValueGetter = fromValue;
+        this._toValueGetter = toValue;
 
         this._easing = easing;
 
         return this;
     }
 
-    currentValue(): any {
+    currentValue(): number {
         return this._propertyParent[this._actualProperty!];
     }
 
-    interp(
-        property: string,
+    interp<PropertyKey extends string & keyof ObjectType>(
+        property: PropertyKey,
         fromValue: number,
         toValue: number,
         easing: Easing = linear,
     ): this {
         this.setProperty(property);
-        return this.setFromToEasing(fromValue, toValue, easing);
+        return this.setFromToEasing(
+            () => fromValue,
+            () => toValue,
+            easing,
+        );
     }
 
     interpFrom(
@@ -90,7 +94,11 @@ export default class Animation extends BaseAnimation {
         easing: Easing = linear,
     ): this {
         this.setProperty(property);
-        return this.setFromToEasing(fromValue, this.currentValue(), easing);
+        return this.setFromToEasing(
+            () => fromValue,
+            () => this.currentValue(),
+            easing,
+        );
     }
 
     interpFromOffset(
@@ -100,15 +108,19 @@ export default class Animation extends BaseAnimation {
     ): this {
         this.setProperty(property);
         return this.setFromToEasing(
-            this.currentValue() + fromOffset,
-            this.currentValue(),
+            () => this.currentValue() + fromOffset,
+            () => this.currentValue(),
             easing,
         );
     }
 
     interpTo(property: string, toValue: number, easing: Easing = linear): this {
         this.setProperty(property);
-        return this.setFromToEasing(this.currentValue(), toValue, easing);
+        return this.setFromToEasing(
+            () => this.currentValue(),
+            () => toValue,
+            easing,
+        );
     }
 
     interpToOffset(
@@ -118,8 +130,8 @@ export default class Animation extends BaseAnimation {
     ): this {
         this.setProperty(property);
         return this.setFromToEasing(
-            this.currentValue(),
-            this.currentValue() + toOffset,
+            () => this.currentValue(),
+            () => this.currentValue() + toOffset,
             easing,
         );
     }
@@ -131,7 +143,7 @@ export default class Animation extends BaseAnimation {
             fromValue: number,
             toValue: number,
             elapsed: number,
-        ) => void,
+        ) => number,
     ): this {
         this._applyFunction = applyFunction;
         return this;
@@ -162,11 +174,14 @@ export default class Animation extends BaseAnimation {
     }
 
     applyProgress() {
+        if (this._fromValue === null) this._fromValue = this._fromValueGetter();
+        if (this._toValue === null) this._toValue = this._toValueGetter();
+
         this._propertyParent[this._actualProperty!] = this._applyFunction!(
             this._easing,
             this._duration,
-            this._fromValue,
-            this._toValue,
+            this._fromValue!,
+            this._toValue!,
             this._elapsed,
         );
         if (this._progress) {
@@ -175,11 +190,14 @@ export default class Animation extends BaseAnimation {
     }
 
     init() {
+        if (this._fromValue === null) this._fromValue = this._fromValueGetter();
+        if (this._toValue === null) this._toValue = this._toValueGetter();
+
         this._propertyParent[this._actualProperty!] = this._applyFunction!(
             this._easing,
             this._duration,
-            this._fromValue,
-            this._toValue,
+            this._fromValue!,
+            this._toValue!,
             0,
         );
         return this;

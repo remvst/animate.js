@@ -1,8 +1,13 @@
 import { Easing } from "../src/easing";
 import { Animation } from "../src/index";
 
+interface TestObject {
+    foo: number;
+    bar: { baz: number };
+}
+
 describe("an animation", () => {
-    let object: any;
+    let object: TestObject;
 
     beforeEach(function () {
         object = {
@@ -143,7 +148,7 @@ describe("an animation", () => {
     });
 
     it("can run on a nested property", () => {
-        const animation = new Animation(object)
+        const animation = new Animation(object as any)
             .interp("bar.baz", 10, 20)
             .during(10);
 
@@ -153,18 +158,22 @@ describe("an animation", () => {
     });
 
     it("can be given a new duration before it starts", () => {
-        const animation = new Animation(object).interp("bar", 10, 20).during(5);
+        const animation = new Animation(object as any)
+            .interp("bar.baz", 10, 20)
+            .during(5);
 
         animation.duration = 2;
 
         animation.cycle(5);
 
         expect(animation.finished).toBe(true);
-        expect(object.bar).toBe(20);
+        expect(object.bar.baz).toBe(20);
     });
 
     it("can be given a new duration after it has been started", () => {
-        const animation = new Animation(object).interp("bar", 0, 10).during(20);
+        const animation = new Animation(object as any)
+            .interp("bar.baz", 0, 10)
+            .during(20);
 
         animation.cycle(5);
 
@@ -173,7 +182,7 @@ describe("an animation", () => {
         animation.cycle(0);
 
         expect(animation.finished).toBe(false);
-        expect(object.bar).toBe(5);
+        expect(object.bar.baz).toBe(5);
     });
 
     it("can interpolate from a value to the current one", () => {

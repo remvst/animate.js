@@ -1,5 +1,3 @@
-"use strict";
-
 import BaseAnimation from "./base-animation";
 
 export default class Loop extends BaseAnimation {
