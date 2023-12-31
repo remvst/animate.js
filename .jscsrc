@@ -1,5 +1,0 @@
-{
-    "validateIndentation": 4,
-    "disallowMultipleVarDecl": false,
-    "disallowUnusedVariables": true
-}
