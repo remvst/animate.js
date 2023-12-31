@@ -1,12 +1,13 @@
 {
     "name": "@remvst/animate.js",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "description": "Generic animation library",
     "main": "lib/index.js",
     "scripts": {
         "prettier:fix": "prettier . --write",
         "prettier:check": "prettier . --check",
-        "test": "npm run prettier:check && ts-node node_modules/jasmine/bin/jasmine --config=spec/support/jasmine.json",
+        "unittest": "ts-node node_modules/jasmine/bin/jasmine --config=spec/support/jasmine.json",
+        "test": "npm run prettier:check && npm run unittest",
         "coverage": "nyc -r lcov -e .ts -x \"spec/**/*.spec.ts\" npm run test",
         "build": "rm -rf lib && tsc",
         "prepublishOnly": "npm i && npm run build"
