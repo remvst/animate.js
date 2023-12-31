@@ -1,7 +1,7 @@
-import BaseAnimation from "./base-animation";
+import { BaseAnimation } from "./base-animation";
 import { Easing, linear } from "./easing";
 
-export default class Animation<ObjectType extends any> extends BaseAnimation {
+export class Animation<ObjectType extends any> extends BaseAnimation {
     private readonly _object: any;
     private _propertyParent: any = null;
     private _actualProperty: string | null = null;

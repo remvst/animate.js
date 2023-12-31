@@ -1,6 +1,6 @@
-import BaseAnimation from "./base-animation";
+import { BaseAnimation } from "./base-animation";
 
-export default class Loop extends BaseAnimation {
+export class Loop extends BaseAnimation {
     private _interval: number;
     private _nextCall: number;
     private _callback: () => void;

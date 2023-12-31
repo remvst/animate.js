@@ -1,14 +1,9 @@
-import BaseAnimation from "./base-animation";
-import Timeline from "./timeline";
+import { BaseAnimation } from "./base-animation";
+import { Timeline } from "./timeline";
 
-export default class InterpolationPool {
-    private _interpolations: BaseAnimation[];
-    private _mainTimeline: Timeline | null;
-
-    constructor() {
-        this._interpolations = [];
-        this._mainTimeline = null;
-    }
+export class InterpolationPool {
+    private _interpolations: BaseAnimation[] = [];
+    private _mainTimeline: Timeline | null = null;
 
     cycle(elapsed: number) {
         // Loop is kinda weird because we want the _interpolations to be performed

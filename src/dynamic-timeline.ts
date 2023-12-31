@@ -1,6 +1,6 @@
-import BaseAnimation from "./base-animation";
+import { BaseAnimation } from "./base-animation";
 
-export default class DynamicTimeline extends BaseAnimation {
+export class DynamicTimeline extends BaseAnimation {
     private _built: BaseAnimation | null;
     private _duration: number;
     private _buildFunc: () => BaseAnimation;

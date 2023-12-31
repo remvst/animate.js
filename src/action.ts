@@ -1,6 +1,6 @@
-import BaseAnimation from "./base-animation";
+import { BaseAnimation } from "./base-animation";
 
-export default class Action extends BaseAnimation {
+export class Action extends BaseAnimation {
     private _callback: () => void;
     private _called: boolean;
 

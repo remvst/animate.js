@@ -1,26 +1,17 @@
-import Action from "./action";
-import BaseAnimation from "./base-animation";
-import InterpolationPool from "./interpolation-pool";
+import { Action } from "./action";
+import { BaseAnimation } from "./base-animation";
+import { InterpolationPool } from "./interpolation-pool";
 
 type Child = {
     delay: number;
     animation: BaseAnimation;
 };
 
-export default class Timeline extends BaseAnimation {
-    private readonly _children: Child[];
-    private readonly _runningChildren: BaseAnimation[];
-    private _duration: number;
-    private _breakpoints: number[];
-
-    constructor() {
-        super();
-
-        this._children = [];
-        this._runningChildren = [];
-        this._duration = 0;
-        this._breakpoints = [];
-    }
+export class Timeline extends BaseAnimation {
+    private readonly _children: Child[] = [];
+    private readonly _runningChildren: BaseAnimation[] = [];
+    private _duration: number = 0;
+    private _breakpoints: number[] = [];
 
     addBreakpoint() {
         this._breakpoints.push(this._duration);
