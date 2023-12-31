@@ -1,9 +1,8 @@
 "use strict";
 
-import BaseAnimation from './base-animation';
+import BaseAnimation from "./base-animation";
 
 export default class DynamicTimeline extends BaseAnimation {
-
     private _built: BaseAnimation | null;
     private _duration: number;
     private _buildFunc: () => BaseAnimation;
@@ -61,5 +60,4 @@ export default class DynamicTimeline extends BaseAnimation {
     get finished() {
         return !!(this._built && this._built.finished);
     }
-
 }

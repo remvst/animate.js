@@ -1,10 +1,9 @@
-'use strict';
+"use strict";
 
-import Timeline from './timeline';
-import BaseAnimation from './base-animation';
+import BaseAnimation from "./base-animation";
+import Timeline from "./timeline";
 
 export default class InterpolationPool {
-
     private _interpolations: BaseAnimation[];
     private _mainTimeline: Timeline | null;
 
@@ -59,5 +58,4 @@ export default class InterpolationPool {
             return count + interpolation.size;
         }, 0);
     }
-
 }

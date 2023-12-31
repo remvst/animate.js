@@ -1,41 +1,36 @@
-import { Animation } from '../src/index';
-import { Easing } from '../src/easing';
+import { Easing } from "../src/easing";
+import { Animation } from "../src/index";
 
-describe('an animation', () => {
-
+describe("an animation", () => {
     let object: any;
 
-    beforeEach(function() {
+    beforeEach(function () {
         object = {
-            'foo': 43,
-            'bar': {
-                'baz': 1
-            }
+            foo: 43,
+            bar: {
+                baz: 1,
+            },
         };
     });
 
-    it('can be instantiated and have a default duration', () => {
-        const animation = new Animation(object)
-            .interp('foo', 0, 1);
+    it("can be instantiated and have a default duration", () => {
+        const animation = new Animation(object).interp("foo", 0, 1);
 
         expect(animation.duration).toBe(1);
         expect(object.foo).toBe(43);
         expect(animation.elapsed).toBe(0);
     });
 
-    it('can be cancelled', () => {
-        const animation = new Animation(object)
-            .interp('foo', 0, 1);
+    it("can be cancelled", () => {
+        const animation = new Animation(object).interp("foo", 0, 1);
 
         animation.cancel();
 
         expect(animation.finished).toBe(true);
     });
 
-    it('can be cancelled after running', () => {
-        const animation = new Animation(object)
-            .interp('foo', 0, 1)
-            .during(1);
+    it("can be cancelled after running", () => {
+        const animation = new Animation(object).interp("foo", 0, 1).during(1);
 
         animation.cycle(0.5);
         animation.cancel();
@@ -44,26 +39,22 @@ describe('an animation', () => {
         expect(object.foo).toBe(0.5);
     });
 
-    it('can be instantiated and have a specific duration', () => {
-        const animation = new Animation(object)
-            .interp('foo', 0, 1)
-            .during(123);
+    it("can be instantiated and have a specific duration", () => {
+        const animation = new Animation(object).interp("foo", 0, 1).during(123);
 
         expect(animation.duration).toBe(123);
         expect(object.foo).toBe(43);
     });
 
-    it('can be instantiated and initialize the object', () => {
-        new Animation(object)
-            .interp('foo', 123456, 1)
-            .init();
+    it("can be instantiated and initialize the object", () => {
+        new Animation(object).interp("foo", 123456, 1).init();
 
         expect(object.foo).toBe(123456);
     });
 
-    it('can cycle with a zero delta', () => {
+    it("can cycle with a zero delta", () => {
         const animation = new Animation(object)
-            .interp('foo', 123456, 1)
+            .interp("foo", 123456, 1)
             .during(10);
 
         animation.cycle(0);
@@ -72,10 +63,8 @@ describe('an animation', () => {
         expect(animation.elapsed).toBe(0);
     });
 
-    it('can cycle with a small delta', () => {
-        const animation = new Animation(object)
-            .interp('foo', 0, 1)
-            .during(10);
+    it("can cycle with a small delta", () => {
+        const animation = new Animation(object).interp("foo", 0, 1).during(10);
 
         animation.cycle(5);
 
@@ -83,10 +72,8 @@ describe('an animation', () => {
         expect(animation.elapsed).toBe(5);
     });
 
-    it('can cycle with a large delta', () => {
-        const animation = new Animation(object)
-            .interp('foo', 0, 1)
-            .during(10);
+    it("can cycle with a large delta", () => {
+        const animation = new Animation(object).interp("foo", 0, 1).during(10);
 
         animation.cycle(50);
 
@@ -94,10 +81,8 @@ describe('an animation', () => {
         expect(animation.elapsed).toBe(10);
     });
 
-    it('does not do anything once it\'s over', () => {
-        const animation = new Animation(object)
-            .interp('foo', 0, 1)
-            .during(10);
+    it("does not do anything once it's over", () => {
+        const animation = new Animation(object).interp("foo", 0, 1).during(10);
 
         animation.cycle(50);
 
@@ -109,11 +94,11 @@ describe('an animation', () => {
         expect(animation.elapsed).toBe(10);
     });
 
-    it('can have a custom easing function', () => {
+    it("can have a custom easing function", () => {
         const easing = jasmine.createSpy().and.returnValue(0.5);
 
         const animation = new Animation(object)
-            .interp('foo', 12, 14, easing)
+            .interp("foo", 12, 14, easing)
             .during(10);
 
         animation.cycle(5);
@@ -122,11 +107,11 @@ describe('an animation', () => {
         expect(easing).toHaveBeenCalledWith(0.5);
     });
 
-    it('can have a progress callback', () => {
+    it("can have a progress callback", () => {
         const progress = jasmine.createSpy();
 
         const animation = new Animation(object)
-            .interp('foo', 0, 1)
+            .interp("foo", 0, 1)
             .progress(progress)
             .during(10);
 
@@ -135,12 +120,12 @@ describe('an animation', () => {
         expect(progress).toHaveBeenCalledWith(0.5);
     });
 
-    it('can have a custom apply function', () => {
+    it("can have a custom apply function", () => {
         const apply = jasmine.createSpy();
         const easing = {} as Easing;
 
         const animation = new Animation(object)
-            .interp('foo', 0, 1, easing)
+            .interp("foo", 0, 1, easing)
             .apply(apply)
             .during(10);
 
@@ -149,18 +134,17 @@ describe('an animation', () => {
         expect(apply).toHaveBeenCalledWith(easing, 10, 0, 1, 5);
     });
 
-    it('can skip', () => {
-        const animation = new Animation(object)
-            .interp('foo', 0, 1);
+    it("can skip", () => {
+        const animation = new Animation(object).interp("foo", 0, 1);
 
         animation.skip();
 
         expect(object.foo).toBe(1);
     });
 
-    it('can run on a nested property', () => {
+    it("can run on a nested property", () => {
         const animation = new Animation(object)
-            .interp('bar.baz', 10, 20)
+            .interp("bar.baz", 10, 20)
             .during(10);
 
         animation.cycle(5);
@@ -168,10 +152,8 @@ describe('an animation', () => {
         expect(object.bar.baz).toBe(15);
     });
 
-    it('can be given a new duration before it starts', () => {
-        const animation = new Animation(object)
-            .interp('bar', 10, 20)
-            .during(5);
+    it("can be given a new duration before it starts", () => {
+        const animation = new Animation(object).interp("bar", 10, 20).during(5);
 
         animation.duration = 2;
 
@@ -181,10 +163,8 @@ describe('an animation', () => {
         expect(object.bar).toBe(20);
     });
 
-    it('can be given a new duration after it has been started', () => {
-        const animation = new Animation(object)
-            .interp('bar', 0, 10)
-            .during(20);
+    it("can be given a new duration after it has been started", () => {
+        const animation = new Animation(object).interp("bar", 0, 10).during(20);
 
         animation.cycle(5);
 
@@ -196,23 +176,21 @@ describe('an animation', () => {
         expect(object.bar).toBe(5);
     });
 
-    it('can interpolate from a value to the current one', () => {
-        const object = {'x': 0};
+    it("can interpolate from a value to the current one", () => {
+        const object = { x: 0 };
 
-        const animation = new Animation(object)
-            .interpFrom('x', 100)
-            .during(20);
+        const animation = new Animation(object).interpFrom("x", 100).during(20);
 
         animation.cycle(10);
 
         expect(object.x).toBe(50);
     });
 
-    it('can interpolate from a value offset to the current value', () => {
-        const object = {'x': 100};
+    it("can interpolate from a value offset to the current value", () => {
+        const object = { x: 100 };
 
         const animation = new Animation(object)
-            .interpFromOffset('x', 50)
+            .interpFromOffset("x", 50)
             .during(20);
 
         animation.cycle(10);
@@ -220,28 +198,25 @@ describe('an animation', () => {
         expect(object.x).toBe(125);
     });
 
-    it('can interpolate to a value from the current one', () => {
-        const object = {'x': 0};
+    it("can interpolate to a value from the current one", () => {
+        const object = { x: 0 };
 
-        const animation = new Animation(object)
-            .interpTo('x', 100)
-            .during(20);
+        const animation = new Animation(object).interpTo("x", 100).during(20);
 
         animation.cycle(10);
 
         expect(object.x).toBe(50);
     });
 
-    it('can interpolate to an offset from the current value', () => {
-        const object = {'x': 100};
+    it("can interpolate to an offset from the current value", () => {
+        const object = { x: 100 };
 
         const animation = new Animation(object)
-            .interpToOffset('x', 50)
+            .interpToOffset("x", 50)
             .during(20);
 
         animation.cycle(10);
 
         expect(object.x).toBe(125);
     });
-
 });

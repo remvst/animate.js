@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
-import BaseAnimation from './base-animation';
-import InterpolationPool from './interpolation-pool';
-import Action from './action';
+import Action from "./action";
+import BaseAnimation from "./base-animation";
+import InterpolationPool from "./interpolation-pool";
 
 type Child = {
     delay: number;
@@ -10,7 +10,6 @@ type Child = {
 };
 
 export default class Timeline extends BaseAnimation {
-
     private readonly _children: Child[];
     private readonly _runningChildren: BaseAnimation[];
     private _duration: number;
@@ -37,13 +36,13 @@ export default class Timeline extends BaseAnimation {
     add(delay: number, animation: BaseAnimation | (() => void)): this {
         if (animation instanceof Timeline) {
             // Add each timeline child
-            animation._children.forEach(child => {
+            animation._children.forEach((child) => {
                 this.add(delay + child.delay, child.animation);
             });
 
             // Get breakpoints from the child
             if (animation._breakpoints.length > 0) {
-                animation._breakpoints.forEach(breakpoint => {
+                animation._breakpoints.forEach((breakpoint) => {
                     this._breakpoints.push(breakpoint + delay);
                 });
 
@@ -65,8 +64,8 @@ export default class Timeline extends BaseAnimation {
 
         // Insert
         this._children.splice(index + 1, 0, {
-            'delay': delay,
-            'animation': animation
+            delay: delay,
+            animation: animation,
         });
 
         // Calculate the new duration
@@ -83,12 +82,15 @@ export default class Timeline extends BaseAnimation {
     cycle(elapsed: number) {
         super.cycle(elapsed);
 
-        while (this._breakpoints.length && this._breakpoints[0] <= this._elapsed) {
+        while (
+            this._breakpoints.length &&
+            this._breakpoints[0] <= this._elapsed
+        ) {
             this._breakpoints.shift();
         }
 
         let index = 0;
-        this._runningChildren.slice().forEach(child => {
+        this._runningChildren.slice().forEach((child) => {
             child.cycle(elapsed);
 
             if (child.finished) {
@@ -98,7 +100,10 @@ export default class Timeline extends BaseAnimation {
             }
         });
 
-        while (this._children.length > 0 && this._children[0].delay <= this._elapsed) {
+        while (
+            this._children.length > 0 &&
+            this._children[0].delay <= this._elapsed
+        ) {
             this.startChild(this._children.shift()!);
         }
     }
@@ -124,11 +129,11 @@ export default class Timeline extends BaseAnimation {
     cancel() {
         super.cancel();
 
-        this._children.forEach(child => {
+        this._children.forEach((child) => {
             child.animation.cancel();
         });
 
-        this._runningChildren.forEach(child => {
+        this._runningChildren.forEach((child) => {
             child.cancel();
         });
 
@@ -141,12 +146,12 @@ export default class Timeline extends BaseAnimation {
 
         this._duration = duration;
 
-        this._children.forEach(child => {
+        this._children.forEach((child) => {
             child.delay *= durationRatio;
             child.animation.duration *= durationRatio;
         });
 
-        this._runningChildren.forEach(child => {
+        this._runningChildren.forEach((child) => {
             child.duration *= durationRatio;
         });
     }
@@ -156,15 +161,22 @@ export default class Timeline extends BaseAnimation {
     }
 
     get size() {
-        return this._runningChildren.reduce((size, child) => {
-            return size + child.size;
-        }, 0) + this._children.reduce((size, child) => {
-            return size + child.animation.size;
-        }, 0);
+        return (
+            this._runningChildren.reduce((size, child) => {
+                return size + child.size;
+            }, 0) +
+            this._children.reduce((size, child) => {
+                return size + child.animation.size;
+            }, 0)
+        );
     }
 
     get finished() {
-        return super.finished && this._children.length === 0 && this._runningChildren.length === 0;
+        return (
+            super.finished &&
+            this._children.length === 0 &&
+            this._runningChildren.length === 0
+        );
     }
 
     runAsMain(pool: InterpolationPool) {
@@ -172,5 +184,4 @@ export default class Timeline extends BaseAnimation {
         pool.setMainTimeline(this);
         return this;
     }
-
 }

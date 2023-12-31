@@ -1,9 +1,8 @@
-'use strict';
+"use strict";
 
-import InterpolationPool from './interpolation-pool';
+import InterpolationPool from "./interpolation-pool";
 
 export default class BaseAnimation {
-
     protected _cancelled: boolean;
     protected _elapsed: number;
     protected _actualElapsed: number;
@@ -35,7 +34,8 @@ export default class BaseAnimation {
         return this;
     }
 
-    cycle(elapsed: number) { // jshint ignore:line
+    cycle(elapsed: number) {
+        // jshint ignore:line
         this._elapsed += elapsed;
         this._actualElapsed += elapsed;
 
@@ -44,7 +44,8 @@ export default class BaseAnimation {
         }
     }
 
-    set duration(duration: number) { // jshint ignore:line
+    set duration(duration: number) {
+        // jshint ignore:line
         // no-op
     }
 
@@ -63,5 +64,4 @@ export default class BaseAnimation {
     get interpolationPool() {
         return this._interpolationPool;
     }
-
 }

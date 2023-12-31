@@ -1,10 +1,9 @@
-'use strict';
+"use strict";
 
-import { DynamicTimeline, Timeline, Animation } from '../src/index';
+import { Animation, DynamicTimeline, Timeline } from "../src/index";
 
-describe('a dynamic timeline', () => {
-
-    it('can be instantiated', () => {
+describe("a dynamic timeline", () => {
+    it("can be instantiated", () => {
         const build = jasmine.createSpy();
         const dtl = new DynamicTimeline(123, build);
 
@@ -14,11 +13,11 @@ describe('a dynamic timeline', () => {
         expect(build).not.toHaveBeenCalled();
     });
 
-    it('can be built on its first cycle', () => {
+    it("can be built on its first cycle", () => {
         const dtl = new DynamicTimeline(123, () => {
             return new Timeline()
-                .append(new Animation({}).interp('foo', 0, 1).during(1))
-                .append(new Animation({}).interp('foo', 0, 1).during(1));
+                .append(new Animation({}).interp("foo", 0, 1).during(1))
+                .append(new Animation({}).interp("foo", 0, 1).during(1));
         });
 
         dtl.cycle(0);
@@ -28,13 +27,13 @@ describe('a dynamic timeline', () => {
         expect(dtl.finished).toBe(false);
     });
 
-    it('can be built and run', () => {
+    it("can be built and run", () => {
         const object = {};
 
         const dtl = new DynamicTimeline(123, () => {
             return new Timeline()
-                .append(new Animation(object).interp('foo', 0, 1).during(1))
-                .append(new Animation(object).interp('foo', 0, 1).during(1));
+                .append(new Animation(object).interp("foo", 0, 1).during(1))
+                .append(new Animation(object).interp("foo", 0, 1).during(1));
         });
 
         dtl.cycle(0.5);
@@ -44,8 +43,10 @@ describe('a dynamic timeline', () => {
         expect((object as any).foo).toBe(0.5);
     });
 
-    it('only builds once', () => {
-        const build = jasmine.createSpy().and.returnValue(new Timeline().wait(1));
+    it("only builds once", () => {
+        const build = jasmine
+            .createSpy()
+            .and.returnValue(new Timeline().wait(1));
         const dtl = new DynamicTimeline(123, build);
 
         dtl.cycle(0);
@@ -57,16 +58,17 @@ describe('a dynamic timeline', () => {
         expect(build.calls.count()).toBe(1);
     });
 
-    it('isn\'t finished if it hasn\'t been built yet', () => {
-        const dtl = new DynamicTimeline(123, () => { throw new Error(); });
+    it("isn't finished if it hasn't been built yet", () => {
+        const dtl = new DynamicTimeline(123, () => {
+            throw new Error();
+        });
 
         expect(dtl.finished).toBe(false);
     });
 
-    it('isn\'t finished if its child isn\'t finished', () => {
+    it("isn't finished if its child isn't finished", () => {
         const dtl = new DynamicTimeline(1, () => {
-            return new Timeline()
-                .wait(100);
+            return new Timeline().wait(100);
         });
 
         dtl.cycle(10);
@@ -74,9 +76,9 @@ describe('a dynamic timeline', () => {
         expect(dtl.finished).toBe(false);
     });
 
-    it('can be skipped', () => {
+    it("can be skipped", () => {
         const child = new Timeline().wait(5);
-        spyOn(child, 'skip').and.callThrough();
+        spyOn(child, "skip").and.callThrough();
 
         const dtl = new DynamicTimeline(10, () => child);
 
@@ -87,7 +89,7 @@ describe('a dynamic timeline', () => {
         expect(child.skip).toHaveBeenCalled();
     });
 
-    it('can be set a new duration while not started', () => {
+    it("can be set a new duration while not started", () => {
         const child = new Timeline().wait(5);
         const dtl = new DynamicTimeline(10, () => child);
 
@@ -97,7 +99,7 @@ describe('a dynamic timeline', () => {
         expect(child.duration).toBe(5);
     });
 
-    it('will set the child duration when building', () => {
+    it("will set the child duration when building", () => {
         const child = new Timeline().wait(5);
         const dtl = new DynamicTimeline(10, () => child);
 
@@ -110,16 +112,15 @@ describe('a dynamic timeline', () => {
         expect(child.duration).toBe(0.5);
     });
 
-    it('can be set a new duration while running', () => {
+    it("can be set a new duration while running", () => {
         const child = new Timeline().wait(5);
         const dtl = new DynamicTimeline(10, () => child);
 
-        dtl.cycle(2)
+        dtl.cycle(2);
 
         dtl.duration = 5;
 
         expect(dtl.duration).toBe(5);
         expect(child.duration).toBe(2.5);
     });
-
 });

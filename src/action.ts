@@ -1,9 +1,8 @@
-'use strict';
+"use strict";
 
-import BaseAnimation from './base-animation';
+import BaseAnimation from "./base-animation";
 
 export default class Action extends BaseAnimation {
-
     private _callback: () => void;
     private _called: boolean;
 
@@ -22,5 +21,4 @@ export default class Action extends BaseAnimation {
     get finished() {
         return super.finished || this._called;
     }
-
 }
