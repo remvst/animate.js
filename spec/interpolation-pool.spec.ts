@@ -22,6 +22,12 @@ describe("an interpolation pool", () => {
         expect(a.interpolationPool).toBe(pool);
     });
 
+    it("can be cleared", () => {
+        new Animation(object()).run(pool);
+        pool.clear();
+        expect(pool.size).toBe(0);
+    });
+
     it("can run animations", () => {
         const a1 = new Animation(object())
             .interp("yolo", 0, 1)

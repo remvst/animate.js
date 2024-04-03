@@ -46,6 +46,11 @@ export class InterpolationPool {
         this._mainTimeline = timeline;
     }
 
+    clear() {
+        this._interpolations = [];
+        this._mainTimeline = null;
+    }
+
     get size() {
         return this._interpolations.reduce((count, interpolation) => {
             return count + interpolation.size;
