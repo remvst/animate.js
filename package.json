@@ -1,6 +1,6 @@
 {
     "name": "@remvst/animate.js",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "description": "Generic animation library",
     "main": "lib/index.js",
     "scripts": {
