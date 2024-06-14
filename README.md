@@ -1,3 +1,5 @@
+![Build status](https://github.com/remvst/animate.js/actions/workflows/check.yaml/badge.svg)
+
 # animate.js
 
 Simple Javascript animation system. Provides timelines and interpolations.
