@@ -16,10 +16,9 @@ describe("an interpolation pool", () => {
     });
 
     it("can have animations", () => {
-        const a = new Animation(object()).run(pool);
+        new Animation(object()).run(pool);
 
         expect(pool.size).toBe(1);
-        expect(a.interpolationPool).toBe(pool);
     });
 
     it("can be cleared", () => {

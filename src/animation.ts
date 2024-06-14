@@ -2,16 +2,14 @@ import { BaseAnimation } from "./base-animation";
 import { Easing, linear } from "./easing";
 
 export class Animation<ObjectType extends any> extends BaseAnimation {
-    private readonly _object: any;
     private _propertyParent: any = null;
     private _actualProperty: string | null = null;
-    private _duration: number;
+    private _duration: number = 1;
     private _toValueGetter: () => number | null = () => null;
     private _fromValueGetter: () => number | null = () => null;
     private _toValue: number | null = null;
     private _fromValue: number | null = null;
-    private _easing: Easing;
-    private _progress: ((t: number) => void) | null;
+    private _easing: Easing = linear;
     private _applyFunction:
         | ((
               easing: Easing,
@@ -22,15 +20,9 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
           ) => number)
         | null;
 
-    constructor(object: ObjectType) {
+    constructor(private readonly object: ObjectType) {
         super();
 
-        this._object = object;
-        this._duration = 1;
-        this._toValue = null;
-        this._fromValue = null;
-        this._easing = linear;
-        this._progress = null;
         this._applyFunction = (
             easing: Easing,
             duration: number,
@@ -42,12 +34,10 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
                 easing(elapsed / duration) * (toValue - fromValue) + fromValue
             );
         };
-
-        this._elapsed = 0;
     }
 
-    setProperty(property: string) {
-        this._propertyParent = this._object;
+    setProperty<PropertyKey extends string & keyof ObjectType>(property: PropertyKey) {
+        this._propertyParent = this.object;
 
         const splitProperty = property.split(".");
         for (var i = 0; i <= splitProperty.length - 2; i++) {
@@ -88,8 +78,8 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
         );
     }
 
-    interpFrom(
-        property: string,
+    interpFrom<PropertyKey extends string & keyof ObjectType>(
+        property: PropertyKey,
         fromValue: number,
         easing: Easing = linear,
     ): this {
@@ -101,8 +91,8 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
         );
     }
 
-    interpFromOffset(
-        property: string,
+    interpFromOffset<PropertyKey extends string & keyof ObjectType>(
+        property: PropertyKey,
         fromOffset: number,
         easing: Easing = linear,
     ): this {
@@ -114,7 +104,7 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
         );
     }
 
-    interpTo(property: string, toValue: number, easing: Easing = linear): this {
+    interpTo<PropertyKey extends string & keyof ObjectType>(property: PropertyKey, toValue: number, easing: Easing = linear): this {
         this.setProperty(property);
         return this.setFromToEasing(
             () => this.currentValue(),
@@ -123,8 +113,8 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
         );
     }
 
-    interpToOffset(
-        property: string,
+    interpToOffset<PropertyKey extends string & keyof ObjectType>(
+        property: PropertyKey,
         toOffset: number,
         easing: Easing = linear,
     ): this {
@@ -154,9 +144,8 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
         return this;
     }
 
-    progress(callback: (t: number) => void): this {
-        this._progress = callback;
-        return this;
+    progress(callback: (progress: number) => void): this {
+        return this.onProgress(callback);
     }
 
     cycle(elapsed: number) {
@@ -184,9 +173,6 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
             this._toValue!,
             this._elapsed,
         );
-        if (this._progress) {
-            this._progress(this._elapsed / this.duration);
-        }
     }
 
     init() {

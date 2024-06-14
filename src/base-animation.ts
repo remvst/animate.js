@@ -1,17 +1,12 @@
 import { InterpolationPool } from "./interpolation-pool";
 
-export abstract class BaseAnimation {
-    protected _cancelled: boolean;
-    protected _elapsed: number;
-    protected _actualElapsed: number;
-    protected _interpolationPool: InterpolationPool | null;
+export type OnCycleCallback = (elapsed: number) => void;
 
-    constructor() {
-        this._cancelled = false;
-        this._elapsed = 0;
-        this._actualElapsed = 0;
-        this._interpolationPool = null;
-    }
+export abstract class BaseAnimation {
+    protected _cancelled: boolean = false;
+    protected _elapsed: number = 0;
+    protected _actualElapsed: number = 0;
+    protected _onCycle: OnCycleCallback = () => {};
 
     get finished() {
         return this._cancelled || this._elapsed >= this.duration;
@@ -23,11 +18,18 @@ export abstract class BaseAnimation {
 
     cancel() {
         this._cancelled = true;
-        this._interpolationPool = null;
     }
 
-    run(pool: InterpolationPool) {
-        this._interpolationPool = pool;
+    onCycle(func: OnCycleCallback): this {
+        this._onCycle = func;
+        return this;
+    }
+
+    onProgress(func: OnCycleCallback): this {
+        return this.onCycle(() => func(this._elapsed / this.duration));
+    }
+
+    run(pool: InterpolationPool): this {
         pool.add(this);
         return this;
     }
@@ -40,6 +42,8 @@ export abstract class BaseAnimation {
         if (this._elapsed >= this.duration) {
             this._elapsed = this.duration;
         }
+
+        this._onCycle(elapsed);
     }
 
     set duration(duration: number) {
@@ -47,19 +51,15 @@ export abstract class BaseAnimation {
         // no-op
     }
 
-    get duration() {
+    get duration(): number {
         return 0;
     }
 
-    get size() {
+    get size(): number {
         return 1;
     }
 
-    get elapsed() {
+    get elapsed(): number {
         return this._elapsed;
-    }
-
-    get interpolationPool() {
-        return this._interpolationPool;
     }
 }
