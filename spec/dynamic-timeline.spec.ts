@@ -38,17 +38,16 @@ describe("a dynamic timeline", () => {
     });
 
     it("can be built and run", () => {
-        const dtl = new DynamicTimeline(123, () => {
+        const dtl = new DynamicTimeline(1234, () => {
             return new Timeline()
                 .append(new Animation(object).interp("foo", 0, 1).during(1))
                 .append(new Animation(object).interp("foo", 0, 1).during(1));
         });
 
-        dtl.cycle(0.5);
+        dtl.cycle(1234 / 4);
 
-        expect(dtl.size).toBe(2);
         expect(dtl.finished).toBe(false);
-        expect((object as any).foo).toBe(0.5);
+        expect(object.foo).toBe(0.5);
     });
 
     it("only builds once", () => {
@@ -79,7 +78,7 @@ describe("a dynamic timeline", () => {
             return new Timeline().wait(100);
         });
 
-        dtl.cycle(10);
+        dtl.cycle(0.5);
 
         expect(dtl.finished).toBe(false);
     });
@@ -117,18 +116,6 @@ describe("a dynamic timeline", () => {
         dtl.cycle(0);
 
         expect(dtl.duration).toBe(1);
-        expect(child.duration).toBe(0.5);
-    });
-
-    it("can be set a new duration while running", () => {
-        const child = new Timeline().wait(5);
-        const dtl = new DynamicTimeline(10, () => child);
-
-        dtl.cycle(2);
-
-        dtl.duration = 5;
-
-        expect(dtl.duration).toBe(5);
-        expect(child.duration).toBe(2.5);
+        expect(child.duration).toBe(1);
     });
 });

@@ -3,7 +3,7 @@ import { Timeline } from "./timeline";
 
 export class InterpolationPool {
     private _interpolations: BaseAnimation[] = [];
-    private _mainTimeline: Timeline | null = null;
+    private _mainTimeline: BaseAnimation | null = null;
 
     cycle(elapsed: number) {
         // Loop is kinda weird because we want the _interpolations to be performed
@@ -42,7 +42,7 @@ export class InterpolationPool {
         new Timeline().add(delay, animation).run(this);
     }
 
-    setMainTimeline(timeline: Timeline) {
+    setMainTimeline(timeline: BaseAnimation) {
         this._mainTimeline = timeline;
     }
 

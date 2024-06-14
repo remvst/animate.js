@@ -2,15 +2,20 @@ import { BaseAnimation } from "./base-animation";
 import { Easing, linear } from "./easing";
 
 export class Animation<ObjectType extends any> extends BaseAnimation {
-    private _propertyParent: any = null;
-    private _actualProperty: string | null = null;
+    private property: string | null = null;
+    private propertyParent: any = null;
+    private actualProperty: string | null = null;
     private _duration: number = 1;
-    private _toValueGetter: () => number | null = () => null;
-    private _fromValueGetter: () => number | null = () => null;
-    private _toValue: number | null = null;
-    private _fromValue: number | null = null;
-    private _easing: Easing = linear;
-    private _applyFunction:
+    private toValueGetter: () => number = () => {
+        throw new Error("Did not specify animation params");
+    };
+    private fromValueGetter: () => number = () => {
+        throw new Error("Did not specify animation params");
+    };
+    private toValue: number | null = null;
+    private fromValue: number | null = null;
+    private easing: Easing = linear;
+    private applyFunction:
         | ((
               easing: Easing,
               duration: number,
@@ -23,7 +28,7 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
     constructor(private readonly object: ObjectType) {
         super();
 
-        this._applyFunction = (
+        this.applyFunction = (
             easing: Easing,
             duration: number,
             fromValue: number,
@@ -36,32 +41,48 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
         };
     }
 
-    setProperty<PropertyKey extends string & keyof ObjectType>(property: PropertyKey) {
-        this._propertyParent = this.object;
+    reversed(): BaseAnimation {
+        return new Animation(this.object)
+            .setProperty(this.property as string & keyof ObjectType)
+            .setFromToEasing(
+                this.toValueGetter!,
+                this.fromValueGetter!,
+                (t) => 1 - this.easing(1 - t),
+            )
+            .during(this.duration);
+    }
+
+    private setProperty<PropertyKey extends string & keyof ObjectType>(
+        property: PropertyKey,
+    ): this {
+        this.property = property;
+        this.propertyParent = this.object;
 
         const splitProperty = property.split(".");
         for (var i = 0; i <= splitProperty.length - 2; i++) {
-            this._propertyParent = this._propertyParent[splitProperty[i]];
+            this.propertyParent = this.propertyParent[splitProperty[i]];
         }
 
-        this._actualProperty = splitProperty[splitProperty.length - 1];
+        this.actualProperty = splitProperty[splitProperty.length - 1];
+
+        return this;
     }
 
-    setFromToEasing(
+    private setFromToEasing(
         fromValue: () => number,
         toValue: () => number,
         easing: Easing = linear,
-    ) {
-        this._fromValueGetter = fromValue;
-        this._toValueGetter = toValue;
+    ): this {
+        this.fromValueGetter = fromValue;
+        this.toValueGetter = toValue;
 
-        this._easing = easing;
+        this.easing = easing;
 
         return this;
     }
 
     currentValue(): number {
-        return this._propertyParent[this._actualProperty!];
+        return this.propertyParent[this.actualProperty!];
     }
 
     interp<PropertyKey extends string & keyof ObjectType>(
@@ -104,7 +125,11 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
         );
     }
 
-    interpTo<PropertyKey extends string & keyof ObjectType>(property: PropertyKey, toValue: number, easing: Easing = linear): this {
+    interpTo<PropertyKey extends string & keyof ObjectType>(
+        property: PropertyKey,
+        toValue: number,
+        easing: Easing = linear,
+    ): this {
         this.setProperty(property);
         return this.setFromToEasing(
             () => this.currentValue(),
@@ -135,7 +160,7 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
             elapsed: number,
         ) => number,
     ): this {
-        this._applyFunction = applyFunction;
+        this.applyFunction = applyFunction;
         return this;
     }
 
@@ -162,28 +187,28 @@ export class Animation<ObjectType extends any> extends BaseAnimation {
         this.applyProgress(); // make sure we're on the last frame
     }
 
-    applyProgress() {
-        if (this._fromValue === null) this._fromValue = this._fromValueGetter();
-        if (this._toValue === null) this._toValue = this._toValueGetter();
+    private applyProgress() {
+        if (this.fromValue === null) this.fromValue = this.fromValueGetter();
+        if (this.toValue === null) this.toValue = this.toValueGetter();
 
-        this._propertyParent[this._actualProperty!] = this._applyFunction!(
-            this._easing,
+        this.propertyParent[this.actualProperty!] = this.applyFunction!(
+            this.easing,
             this._duration,
-            this._fromValue!,
-            this._toValue!,
-            this._elapsed,
+            this.fromValue!,
+            this.toValue!,
+            this.elapsed,
         );
     }
 
     init() {
-        if (this._fromValue === null) this._fromValue = this._fromValueGetter();
-        if (this._toValue === null) this._toValue = this._toValueGetter();
+        if (this.fromValue === null) this.fromValue = this.fromValueGetter();
+        if (this.toValue === null) this.toValue = this.toValueGetter();
 
-        this._propertyParent[this._actualProperty!] = this._applyFunction!(
-            this._easing,
+        this.propertyParent[this.actualProperty!] = this.applyFunction!(
+            this.easing,
             this._duration,
-            this._fromValue!,
-            this._toValue!,
+            this.fromValue!,
+            this.toValue!,
             0,
         );
         return this;

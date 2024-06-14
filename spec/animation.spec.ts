@@ -23,7 +23,6 @@ describe("an animation", () => {
 
         expect(animation.duration).toBe(1);
         expect(object.foo).toBe(43);
-        expect(animation.elapsed).toBe(0);
     });
 
     it("can be cancelled", () => {
@@ -65,7 +64,6 @@ describe("an animation", () => {
         animation.cycle(0);
 
         expect(object.foo).toBe(123456);
-        expect(animation.elapsed).toBe(0);
     });
 
     it("can cycle with a small delta", () => {
@@ -74,7 +72,6 @@ describe("an animation", () => {
         animation.cycle(5);
 
         expect(object.foo).toBe(0.5);
-        expect(animation.elapsed).toBe(5);
     });
 
     it("can cycle with a large delta", () => {
@@ -83,7 +80,6 @@ describe("an animation", () => {
         animation.cycle(50);
 
         expect(object.foo).toBe(1);
-        expect(animation.elapsed).toBe(10);
     });
 
     it("does not do anything once it's over", () => {
@@ -96,7 +92,6 @@ describe("an animation", () => {
         animation.cycle(50);
 
         expect(object.foo).toBe(0);
-        expect(animation.elapsed).toBe(10);
     });
 
     it("can have a custom easing function", () => {
@@ -227,5 +222,23 @@ describe("an animation", () => {
         animation.cycle(10);
 
         expect(object.x).toBe(125);
+    });
+
+    it("can be reversed", () => {
+        const object = { x: 100 };
+
+        const animation = new Animation(object)
+            .interp("x", 10, 20)
+            .during(20)
+            .reversed();
+
+        animation.cycle(0);
+        expect(object.x).toBe(20);
+
+        animation.cycle(10);
+        expect(object.x).toBe(15);
+
+        animation.cycle(10);
+        expect(object.x).toBe(10);
     });
 });

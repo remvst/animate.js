@@ -1,4 +1,4 @@
-import { Animation, DynamicTimeline, Timeline } from "../src/index";
+import { Animation, Timeline } from "../src/index";
 
 interface TestObject {
     foo: number;
@@ -447,11 +447,7 @@ describe("a timeline", () => {
     });
 
     it("will not be finished until all of its children are finished", () => {
-        const tl = new Timeline().append(
-            new DynamicTimeline(1, () => {
-                return new Timeline().wait(100);
-            }),
-        );
+        const tl = new Timeline().append(new Timeline().wait(100));
 
         tl.cycle(2);
         expect(tl.finished).toBe(false);
@@ -521,5 +517,29 @@ describe("a timeline", () => {
             expect((object2 as any).foo).toBe(5);
             expect(action).not.toHaveBeenCalled();
         });
+    });
+
+    it("can be reversed", () => {
+        const obj = object();
+
+        const tl = new Timeline()
+            .append(new Animation(obj).interp("foo", 0, 10).during(2))
+            .append(new Animation(obj).interp("foo", 10, 100).during(2))
+            .reversed();
+
+        tl.cycle(0);
+        expect(obj.foo).toBe(100);
+
+        tl.cycle(1);
+        expect(obj.foo).toBe(55);
+
+        tl.cycle(1);
+        expect(obj.foo).toBe(10);
+
+        tl.cycle(1);
+        expect(obj.foo).toBe(5);
+
+        tl.cycle(1);
+        expect(obj.foo).toBe(0);
     });
 });

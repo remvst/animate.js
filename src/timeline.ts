@@ -1,6 +1,5 @@
 import { Action } from "./action";
 import { BaseAnimation } from "./base-animation";
-import { InterpolationPool } from "./interpolation-pool";
 
 type Child = {
     delay: number;
@@ -8,14 +7,33 @@ type Child = {
 };
 
 export class Timeline extends BaseAnimation {
-    private readonly _children: Child[] = [];
-    private readonly _runningChildren: BaseAnimation[] = [];
+    private readonly children: Child[] = [];
+    private readonly runningChildren: BaseAnimation[] = [];
     private _duration: number = 0;
-    private _breakpoints: number[] = [];
+    private readonly breakpoints: number[] = [];
+
+    reversed(): BaseAnimation {
+        const res = new Timeline();
+        for (const child of this.children) {
+            res.add(
+                this.duration - (child.delay + child.animation.duration),
+                child.animation.reversed(),
+            );
+        }
+        for (const breakpoint of this.breakpoints) {
+            res.addBreakpointAt(this.duration - breakpoint);
+        }
+        return res;
+    }
+
+    addBreakpointAt(time: number) {
+        this.breakpoints.push(time);
+        this.breakpoints.sort();
+        return this;
+    }
 
     addBreakpoint() {
-        this._breakpoints.push(this._duration);
-        return this;
+        return this.addBreakpointAt(this._duration);
     }
 
     append(animation: BaseAnimation | (() => void)): this {
@@ -25,18 +43,24 @@ export class Timeline extends BaseAnimation {
     add(delay: number, animation: BaseAnimation | (() => void)): this {
         if (animation instanceof Timeline) {
             // Add each timeline child
-            animation._children.forEach((child) => {
+            for (const child of animation.children) {
                 this.add(delay + child.delay, child.animation);
-            });
+            }
 
             // Get breakpoints from the child
-            if (animation._breakpoints.length > 0) {
-                animation._breakpoints.forEach((breakpoint) => {
-                    this._breakpoints.push(breakpoint + delay);
-                });
+            if (animation.breakpoints.length > 0) {
+                for (const breakpoint of animation.breakpoints) {
+                    this.breakpoints.push(breakpoint + delay);
+                }
 
-                this._breakpoints.sort();
+                this.breakpoints.sort();
             }
+
+            // Calculate the new duration
+            this._duration = Math.max(
+                this._duration,
+                delay + animation.duration,
+            );
 
             return this;
         }
@@ -46,13 +70,13 @@ export class Timeline extends BaseAnimation {
         }
 
         // Find the index at which we want to insert
-        let index = this._children.length - 1;
-        while (index >= 0 && this._children[index].delay > delay) {
+        let index = this.children.length - 1;
+        while (index >= 0 && this.children[index].delay > delay) {
             index--;
         }
 
         // Insert
-        this._children.splice(index + 1, 0, {
+        this.children.splice(index + 1, 0, {
             delay: delay,
             animation: animation,
         });
@@ -71,43 +95,40 @@ export class Timeline extends BaseAnimation {
     cycle(elapsed: number) {
         super.cycle(elapsed);
 
-        while (
-            this._breakpoints.length &&
-            this._breakpoints[0] <= this._elapsed
-        ) {
-            this._breakpoints.shift();
+        while (this.breakpoints.length && this.breakpoints[0] <= this.elapsed) {
+            this.breakpoints.shift();
         }
 
         let index = 0;
-        this._runningChildren.slice().forEach((child) => {
+        this.runningChildren.slice().forEach((child) => {
             child.cycle(elapsed);
 
             if (child.finished) {
-                this._runningChildren.splice(index, 1);
+                this.runningChildren.splice(index, 1);
             } else {
                 index++;
             }
         });
 
         while (
-            this._children.length > 0 &&
-            this._children[0].delay <= this._elapsed
+            this.children.length > 0 &&
+            this.children[0].delay <= this.elapsed
         ) {
-            this.startChild(this._children.shift()!);
+            this.startChild(this.children.shift()!);
         }
     }
 
     private startChild(child: Child) {
-        child.animation.cycle(this._actualElapsed - child.delay);
+        child.animation.cycle(this.actualElapsed - child.delay);
 
         if (!child.animation.finished) {
-            this._runningChildren.push(child.animation);
+            this.runningChildren.push(child.animation);
         }
     }
 
     skip() {
-        const jumpTo = this._breakpoints.shift() || this._duration;
-        const added = jumpTo - this._elapsed;
+        const jumpTo = this.breakpoints.shift() || this._duration;
+        const added = jumpTo - this.elapsed;
 
         // Need to warn the children that they need to go forward
         this.cycle(added);
@@ -118,16 +139,16 @@ export class Timeline extends BaseAnimation {
     cancel() {
         super.cancel();
 
-        this._children.forEach((child) => {
+        for (const child of this.children) {
             child.animation.cancel();
-        });
+        }
 
-        this._runningChildren.forEach((child) => {
+        for (const child of this.runningChildren) {
             child.cancel();
-        });
+        }
 
-        this._children.splice(0, this._children.length);
-        this._runningChildren.splice(0, this._runningChildren.length);
+        this.children.splice(0, this.children.length);
+        this.runningChildren.splice(0, this.runningChildren.length);
     }
 
     set duration(duration) {
@@ -135,14 +156,14 @@ export class Timeline extends BaseAnimation {
 
         this._duration = duration;
 
-        this._children.forEach((child) => {
+        for (const child of this.children) {
             child.delay *= durationRatio;
             child.animation.duration *= durationRatio;
-        });
+        }
 
-        this._runningChildren.forEach((child) => {
+        for (const child of this.runningChildren) {
             child.duration *= durationRatio;
-        });
+        }
     }
 
     get duration() {
@@ -151,10 +172,10 @@ export class Timeline extends BaseAnimation {
 
     get size() {
         return (
-            this._runningChildren.reduce((size, child) => {
+            this.runningChildren.reduce((size, child) => {
                 return size + child.size;
             }, 0) +
-            this._children.reduce((size, child) => {
+            this.children.reduce((size, child) => {
                 return size + child.animation.size;
             }, 0)
         );
@@ -163,14 +184,8 @@ export class Timeline extends BaseAnimation {
     get finished() {
         return (
             super.finished &&
-            this._children.length === 0 &&
-            this._runningChildren.length === 0
+            this.children.length === 0 &&
+            this.runningChildren.length === 0
         );
-    }
-
-    runAsMain(pool: InterpolationPool) {
-        this.run(pool);
-        pool.setMainTimeline(this);
-        return this;
     }
 }

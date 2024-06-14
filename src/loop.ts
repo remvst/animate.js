@@ -1,14 +1,13 @@
 import { BaseAnimation } from "./base-animation";
 
 export class Loop extends BaseAnimation {
-    private _interval: number;
-    private _nextCall: number;
-    private _callback: () => void;
+    private nextCall: number;
+    private readonly initialDelay: number;
 
     constructor(
-        interval: number,
-        callback: () => void,
-        initialDelay: number | undefined = undefined,
+        private readonly interval: number,
+        private readonly callback: () => void,
+        initialDelay?: number,
     ) {
         super();
 
@@ -18,18 +17,25 @@ export class Loop extends BaseAnimation {
             );
         }
 
-        this._interval = interval;
-        this._nextCall =
-            initialDelay !== undefined ? initialDelay : this._interval;
-        this._callback = callback;
-        this._cancelled = false;
+        this.initialDelay =
+            initialDelay !== undefined ? initialDelay : this.interval;
+        this.nextCall = this.initialDelay;
+        this.cancelled = false;
+    }
+
+    reversed(): BaseAnimation {
+        return new Loop(
+            this.interval,
+            this.callback,
+            this.interval - this.initialDelay,
+        );
     }
 
     cycle(elapsed: number) {
-        this._nextCall -= elapsed;
-        while (this._nextCall <= 0) {
-            this._nextCall += this._interval;
-            this._callback();
+        this.nextCall -= elapsed;
+        while (this.nextCall <= 0) {
+            this.nextCall += this.interval;
+            this.callback();
         }
     }
 

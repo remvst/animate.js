@@ -3,21 +3,21 @@ import { InterpolationPool } from "./interpolation-pool";
 export type OnCycleCallback = (elapsed: number) => void;
 
 export abstract class BaseAnimation {
-    protected _cancelled: boolean = false;
-    protected _elapsed: number = 0;
-    protected _actualElapsed: number = 0;
+    protected cancelled: boolean = false;
+    elapsed: number = 0;
+    protected actualElapsed: number = 0;
     protected _onCycle: OnCycleCallback = () => {};
 
     get finished() {
-        return this._cancelled || this._elapsed >= this.duration;
+        return this.cancelled || this.elapsed >= this.duration;
     }
 
     skip() {
-        this._elapsed = this.duration;
+        this.elapsed = this.duration;
     }
 
     cancel() {
-        this._cancelled = true;
+        this.cancelled = true;
     }
 
     onCycle(func: OnCycleCallback): this {
@@ -26,7 +26,7 @@ export abstract class BaseAnimation {
     }
 
     onProgress(func: OnCycleCallback): this {
-        return this.onCycle(() => func(this._elapsed / this.duration));
+        return this.onCycle(() => func(this.elapsed / this.duration));
     }
 
     run(pool: InterpolationPool): this {
@@ -34,32 +34,30 @@ export abstract class BaseAnimation {
         return this;
     }
 
+    runAsMain(pool: InterpolationPool) {
+        this.run(pool);
+        pool.setMainTimeline(this);
+        return this;
+    }
+
     cycle(elapsed: number) {
         // jshint ignore:line
-        this._elapsed += elapsed;
-        this._actualElapsed += elapsed;
+        this.elapsed += elapsed;
+        this.actualElapsed += elapsed;
 
-        if (this._elapsed >= this.duration) {
-            this._elapsed = this.duration;
+        if (this.elapsed >= this.duration) {
+            this.elapsed = this.duration;
         }
 
         this._onCycle(elapsed);
     }
 
-    set duration(duration: number) {
-        // jshint ignore:line
-        // no-op
-    }
-
-    get duration(): number {
-        return 0;
-    }
+    abstract get duration(): number;
+    abstract set duration(duration: number);
 
     get size(): number {
         return 1;
     }
 
-    get elapsed(): number {
-        return this._elapsed;
-    }
+    abstract reversed(): BaseAnimation;
 }

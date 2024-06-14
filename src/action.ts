@@ -1,22 +1,31 @@
 import { BaseAnimation } from "./base-animation";
 
 export class Action extends BaseAnimation {
-    private _callback: () => void;
-    private _called: boolean;
+    private called: boolean = false;
 
-    constructor(callback: () => void) {
+    constructor(private readonly callback: () => void) {
         super();
-        this._callback = callback;
-        this._called = false;
     }
 
     cycle(elapsed: number) {
         super.cycle(elapsed);
-        this._called = true;
-        this._callback();
+        this.called = true;
+        this.callback();
     }
 
     get finished() {
-        return super.finished || this._called;
+        return super.finished || this.called;
+    }
+
+    get duration(): number {
+        return 0;
+    }
+
+    set duration(duration: number) {
+        // no-op
+    }
+
+    reversed(): BaseAnimation {
+        return new Action(this.callback);
     }
 }
