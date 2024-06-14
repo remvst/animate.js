@@ -1,6 +1,6 @@
 import { InterpolationPool } from "./interpolation-pool";
 
-export class BaseAnimation {
+export abstract class BaseAnimation {
     protected _cancelled: boolean;
     protected _elapsed: number;
     protected _actualElapsed: number;

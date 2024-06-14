@@ -1,15 +1,19 @@
 {
     "name": "@remvst/animate.js",
-    "version": "3.1.0",
+    "version": "3.2.0",
     "description": "Generic animation library",
-    "main": "lib/index.js",
+    "main": "lib/cjs/index.js",
+    "exports": {
+        "require": "./lib/cjs/index.js",
+        "import": "./lib/esm/index.js"
+    },
     "scripts": {
         "prettier:fix": "prettier . --write",
         "prettier:check": "prettier . --check",
         "unittest": "ts-node node_modules/jasmine/bin/jasmine --config=spec/support/jasmine.json",
         "test": "npm run prettier:check && npm run unittest",
         "coverage": "nyc -r lcov -e .ts -x \"spec/**/*.spec.ts\" npm run test",
-        "build": "rm -rf lib && tsc",
+        "build": "rm -rf lib && tsc && tsc --project tsconfig.cjs.json",
         "prepublishOnly": "npm i && npm run build"
     },
     "author": "Rémi Vansteelandt",
